@@ -264,145 +264,189 @@ export default {
     saveAgents() {
       // TODO: Implement API call to save agents
       console.log('Saving agents:', this.agents);
+    },
+    toggleSection(event) {
+      const section = event.target.closest('.form-section');
+      if (section) {
+        section.classList.toggle('collapsed');
+      }
     }
+  },
+  mounted() {
+    // Add click handlers to section headers
+    const headers = document.querySelectorAll('.form-section h4');
+    headers.forEach(header => {
+      header.addEventListener('click', this.toggleSection);
+    });
   }
 }
 </script>
 
 <style scoped>
 .agents-container {
-  padding: 4px;
-  font-size: 1rem;
+  padding: 2px;
+  font-size: 0.9rem;
+  max-width: 100%; /* Adjust to fit new layout */
 }
 
 .agents-section {
-  padding: 8px;
+  padding: 4px;
 }
 
 .agents-grid {
-  gap: 8px;
-  margin-bottom: 8px;
+  gap: 4px;
+  margin-bottom: 4px;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
 }
 
 .agent-config {
-  padding: 8px;
+  padding: 4px;
 }
 
 .form-section {
-  margin-bottom: 8px;
-  padding: 6px;
+  margin-bottom: 4px;
+  padding: 4px;
+  border: 1px solid #eee;
 }
 
 .form-section h4 {
-  font-size: 1rem;
-  margin: 0 0 4px 0;
+  font-size: 0.9rem;
+  margin: 0 0 2px 0;
+  color: var(--primary-color);
+  display: inline-block;
+  padding: 2px 0;
 }
 
 .form-group {
-  margin-bottom: 4px;
+  margin-bottom: 2px;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  max-width: 400px; /* Add max-width constraint */
 }
 
 .form-group label {
-  margin-bottom: 1px;
-  font-size: 0.9rem;
+  margin: 0;
+  font-size: 0.85rem;
+  width: 120px; /* Fixed width for labels */
+  flex-shrink: 0;
 }
 
-.form-group input {
-  padding: 4px 6px;
-  height: 28px;
-  font-size: 0.95rem;
+.form-group input,
+.form-group select {
+  height: 24px;
+  padding: 2px 4px;
+  font-size: 0.85rem;
+  width: 200px; /* Fixed width for inputs */
+  flex-shrink: 1;
 }
 
-.actions {
+.form-group textarea {
+  width: 200px; /* Fixed width for textarea */
+  padding: 2px 4px;
+  font-size: 0.85rem;
+  min-height: 40px;
+}
+
+/* Specific styles for knowledge sources */
+.knowledge-source {
+  gap: 4px;
+  max-width: 400px;
+}
+
+.knowledge-source input {
+  width: 200px;
+}
+
+.knowledge-source select {
+  width: 120px;
+}
+
+/* Adjust traits grid */
+.traits-grid {
+  width: 200px;
   display: flex;
-  justify-content: flex-end;
-  gap: 8px;
+  flex-wrap: wrap;
+  gap: 4px;
+  padding: 2px;
 }
 
-.add-button, .save-button {
-  padding: 4px 12px;
-  border: none;
-  border-radius: 4px;
-  cursor: pointer;
-  font-size: 0.875rem;
-  transition: background-color 0.3s;
+/* Adjust range input */
+input[type="range"] {
+  width: 150px;
 }
 
-.add-button {
-  background-color: var(--background-dark);
-  color: var(--text-dark);
+.range-value {
+  width: 40px;
+  text-align: right;
 }
 
-.save-button {
-  background-color: var(--primary-color);
-  color: white;
+/* Style for switches container */
+.switches {
+  flex-direction: column;
+  align-items: flex-start;
 }
 
-.add-button:hover {
-  background-color: #e0e0e0;
+.switch {
+  margin-left: 120px; /* Align with other inputs */
+  font-size: 0.85rem;
 }
 
-.save-button:hover {
-  background-color: var(--hover-color);
+.agent-header {
+  margin-bottom: 4px;
+  padding: 2px;
 }
 
-.form-section {
-  margin-bottom: 16px;
-  padding: 8px;
-  border: 1px solid #eee;
-  border-radius: 4px;
-}
-
-.form-section h4 {
-  margin: 0 0 8px 0;
-  font-size: 0.9rem;
-  color: var(--primary-color);
-}
-
-.agent-title {
-  display: flex;
-  align-items: center;
-  gap: 8px;
+.agent-title h3 {
+  font-size: 1rem;
+  margin: 0;
 }
 
 .agent-status {
-  font-size: 0.75rem;
-  padding: 2px 6px;
-  border-radius: 12px;
-  background-color: #ddd;
+  font-size: 0.7rem;
+  padding: 1px 4px;
 }
 
-.agent-status.active {
-  background-color: var(--active-color);
-  color: white;
+.actions {
+  margin-top: 4px;
+  gap: 4px;
 }
 
-.traits-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
-  gap: 8px;
-}
-
-.knowledge-sources {
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-}
-
-.knowledge-source {
-  display: flex;
-  gap: 8px;
+.add-button, .save-button {
+  padding: 3px 8px;
+  font-size: 0.85rem;
 }
 
 .remove-source {
-  padding: 0 8px;
-  background: none;
-  border: none;
-  color: #666;
-  cursor: pointer;
+  padding: 0 4px;
 }
 
-.remove-source:hover {
-  color: #e74c3c;
+/* New styles for collapsible sections */
+.form-section {
+  position: relative;
+}
+
+.form-section h4 {
+  cursor: pointer;
+  user-select: none;
+  width: 100%;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.form-section h4::after {
+  content: '▼';
+  font-size: 0.7rem;
+  color: var(--primary-color);
+  margin-left: 4px;
+}
+
+.form-section.collapsed h4::after {
+  content: '▶';
+}
+
+.form-section.collapsed .form-group {
+  display: none;
 }
 </style>

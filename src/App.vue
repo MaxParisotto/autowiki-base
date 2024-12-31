@@ -12,6 +12,15 @@
     <main class="content">
       <router-view />
     </main>
+    <aside class="right-panel">
+      <div class="panel-content">
+        <h3>Activity Log</h3>
+        <div class="activity-feed">
+          <!-- Activity feed content will go here -->
+          <p>Recent activities will appear here</p>
+        </div>
+      </div>
+    </aside>
   </div>
 </template>
 
@@ -47,7 +56,7 @@ body {
 }
 
 .navbar {
-  width: 160px;
+  width: 140px; /* Reduced from 160px */
   background-color: var(--primary-color);
   color: var(--text-light);
   padding: 4px;
@@ -88,10 +97,39 @@ body {
 }
 
 .content {
-  flex: 1;
+  width: 60%; /* Set content width */
+  min-width: 600px;
+  max-width: 1000px;
   padding: 4px;
   overflow-y: auto;
   background-color: white;
   box-shadow: inset 2px 0 5px rgba(0, 0, 0, 0.05);
+}
+
+.right-panel {
+  flex: 1;
+  background-color: var(--background-dark);
+  padding: 4px;
+  border-left: 1px solid #ddd;
+  min-width: 200px;
+}
+
+.panel-content {
+  background: white;
+  border-radius: 8px;
+  padding: 8px;
+  height: calc(100% - 16px);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+}
+
+.panel-content h3 {
+  margin: 0 0 8px 0;
+  font-size: 1rem;
+  color: var(--text-dark);
+}
+
+.activity-feed {
+  font-size: 0.85rem;
+  color: var(--text-dark);
 }
 </style>

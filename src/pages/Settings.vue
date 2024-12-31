@@ -187,6 +187,7 @@ export default {
 .settings-container {
   padding: 4px;
   font-size: 1rem;
+  max-width: 100%; /* Adjust to fit new layout */
 }
 
 .settings-section {
@@ -196,16 +197,30 @@ export default {
 
 .form-group {
   margin-bottom: 4px;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  max-width: 400px;
 }
 
 .form-group label {
-  margin-bottom: 1px;
+  margin: 0;
   font-size: 0.9rem;
+  width: 120px;
+  flex-shrink: 0;
 }
 
-.form-group input {
+.form-group input,
+.form-group select {
+  width: 200px;
   padding: 4px 6px;
   height: 28px;
+  font-size: 0.95rem;
+}
+
+.form-group textarea {
+  width: 200px;
+  padding: 4px 6px;
   font-size: 0.95rem;
 }
 
