@@ -2,11 +2,11 @@
   <div class="app flex min-h-screen bg-canvas text-text-primary">
     <nav class="navbar">
       <ul>
-        <li v-for="(item, index) in menuItems" :key="index">
+        <li v-for="item in menuItems" :key="item.path">
           <router-link 
             :to="item.path" 
-            v-float-tooltip="item.tooltip"
-            class="nav-link"
+            :title="item.tooltip"
+            class="nav-link tooltip-trigger"
           >
             <component :is="item.icon" class="w-5 h-5 mr-2" />
             {{ item.name }}
@@ -25,7 +25,9 @@
           leave-from-class="opacity-100"
           leave-to-class="transform opacity-0"
         >
-          <component :is="Component" />
+          <div class="page-container">
+            <component :is="Component" />
+          </div>
         </transition>
       </router-view>
     </main>
@@ -33,7 +35,7 @@
   </div>
 </template>
 
-<script setup>
+<script setup lang="ts">
 import { ref } from 'vue'
 import ActivityWidget from './components/ActivityWidget.vue'
 import {
@@ -56,7 +58,7 @@ const menuItems = ref([
 </script>
 
 <style lang="postcss">
-/* Remove base.css import since it's already imported in main.js */
+
 .app {
   display: flex;
   min-height: 100vh;
@@ -235,5 +237,30 @@ tr:nth-child(even) {
 
 .router-link-active {
   @apply bg-accent-orange text-black font-semibold;
+}
+
+/* Add these tooltip styles */
+.tooltip-trigger {
+  position: relative;
+}
+
+.tooltip-trigger:hover::after {
+  content: attr(title);
+  position: absolute;
+  bottom: 100%;
+  left: 50%;
+  transform: translateX(-50%);
+  padding: 4px 8px;
+  background-color: var(--bg-elevation-3);
+  color: var(--text-primary);
+  border-radius: 4px;
+  font-size: 12px;
+  white-space: nowrap;
+  z-index: 50;
+}
+
+.page-container {
+  width: 100%;
+  height: 100%;
 }
 </style>

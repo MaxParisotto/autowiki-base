@@ -14,11 +14,11 @@ const app = createApp(App);
 // Simple tooltip directive
 app.directive('tooltip', {
   mounted(el, binding) {
-    el.setAttribute('data-tooltip', binding.value)
-    el.classList.add('has-tooltip')
+    el.setAttribute('title', binding.value);
+    el.classList.add('tooltip-trigger');
   },
   updated(el, binding) {
-    el.setAttribute('data-tooltip', binding.value)
+    el.setAttribute('title', binding.value);
   }
 })
 
