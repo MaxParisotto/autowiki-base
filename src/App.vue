@@ -12,21 +12,18 @@
     <main class="content">
       <router-view />
     </main>
-    <aside class="right-panel">
-      <div class="panel-content">
-        <h3>Activity Log</h3>
-        <div class="activity-feed">
-          <!-- Activity feed content will go here -->
-          <p>Recent activities will appear here</p>
-        </div>
-      </div>
-    </aside>
+    <ActivityWidget />
   </div>
 </template>
 
 <script>
+import ActivityWidget from './components/ActivityWidget.vue';
+
 export default {
   name: "App",
+  components: {
+    ActivityWidget
+  }
 };
 </script>
 
@@ -97,40 +94,10 @@ body {
 }
 
 .content {
-  width: 45%; /* Reduced from 60% */
-  min-width: 500px; /* Reduced from 600px */
-  max-width: 800px; /* Reduced from 1000px */
+  flex: 1;
   padding: 4px;
   overflow-y: auto;
   background-color: white;
   box-shadow: inset 2px 0 5px rgba(0, 0, 0, 0.05);
-}
-
-.right-panel {
-  flex: 1;
-  min-width: 400px; /* Increased from 200px */
-  max-width: 600px; /* Added max-width */
-  background-color: var(--background-dark);
-  padding: 4px;
-  border-left: 1px solid #ddd;
-}
-
-.panel-content {
-  background: white;
-  border-radius: 8px;
-  padding: 12px; /* Increased from 8px for better content spacing */
-  height: calc(100% - 16px);
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
-}
-
-.panel-content h3 {
-  margin: 0 0 8px 0;
-  font-size: 1rem;
-  color: var(--text-dark);
-}
-
-.activity-feed {
-  font-size: 0.85rem;
-  color: var(--text-dark);
 }
 </style>
