@@ -121,6 +121,20 @@
         </div>
       </section>
 
+      <!-- Prime Directives Section -->
+      <section class="settings-section">
+        <div class="section-header" @click="toggleSection('primeDirectives')">
+          <h2>Prime Directives Configuration</h2>
+          <span class="toggle-icon">{{ isExpanded.primeDirectives ? '−' : '+' }}</span>
+        </div>
+        <div class="section-content" v-show="isExpanded.primeDirectives">
+          <div v-for="(directive, index) in settings.primeDirectives" :key="index" class="form-group">
+            <label>Directive {{index + 1}}:</label>
+            <input v-model="directive.text" type="text" required>
+          </div>
+        </div>
+      </section>
+
       <div class="form-actions">
         <button type="submit" class="save-button">Save Settings</button>
       </div>
@@ -160,14 +174,27 @@ export default {
           model: 'llama2',
           systemContext: '',
           temperature: 0.7
-        }
+        },
+        primeDirectives: [
+          { id: 1, text: "Never generate harmful or malicious content" },
+          { id: 2, text: "Always maintain data privacy and security" },
+          { id: 3, text: "Provide accurate and truthful information" },
+          { id: 4, text: "Respect intellectual property rights" },
+          { id: 5, text: "Maintain professional communication" },
+          { id: 6, text: "Never impersonate humans" },
+          { id: 7, text: "Acknowledge limitations and uncertainties" },
+          { id: 8, text: "Prevent misuse of AI capabilities" },
+          { id: 9, text: "Promote ethical AI practices" },
+          { id: 10, text: "Support human decision-making, not replace it" }
+        ]
       },
       isExpanded: {
         weaviate: false,
         postgresql: false,
         nextcloud: false,
         openai: false,
-        ollama: false
+        ollama: false,
+        primeDirectives: false
       }
     }
   },

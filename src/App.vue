@@ -97,9 +97,9 @@ body {
 }
 
 .content {
-  width: 60%; /* Set content width */
-  min-width: 600px;
-  max-width: 1000px;
+  width: 45%; /* Reduced from 60% */
+  min-width: 500px; /* Reduced from 600px */
+  max-width: 800px; /* Reduced from 1000px */
   padding: 4px;
   overflow-y: auto;
   background-color: white;
@@ -108,16 +108,17 @@ body {
 
 .right-panel {
   flex: 1;
+  min-width: 400px; /* Increased from 200px */
+  max-width: 600px; /* Added max-width */
   background-color: var(--background-dark);
   padding: 4px;
   border-left: 1px solid #ddd;
-  min-width: 200px;
 }
 
 .panel-content {
   background: white;
   border-radius: 8px;
-  padding: 8px;
+  padding: 12px; /* Increased from 8px for better content spacing */
   height: calc(100% - 16px);
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
 }

@@ -119,6 +119,23 @@
             </div>
           </div>
 
+          <!-- Prime Directives -->
+          <div class="form-section">
+            <h4>Prime Directives</h4>
+            <div class="form-group directives-grid">
+              <label v-for="directive in primeDirectives" :key="directive.id" class="directive-item">
+                <input 
+                  type="checkbox" 
+                  v-model="agent.directives" 
+                  :value="directive.id"
+                >
+                <span class="directive-text" :title="directive.text">
+                  {{directive.text}}
+                </span>
+              </label>
+            </div>
+          </div>
+
           <!-- Advanced Settings -->
           <div class="form-section">
             <h4>Advanced Settings</h4>
@@ -206,7 +223,8 @@ export default {
             memoryManagement: 'conversation',
             learning: false,
             collaborative: false
-          }
+          },
+          directives: [1, 2, 3], // Default enabled directives
         }
       ],
       personalityTraits: [
@@ -216,6 +234,18 @@ export default {
         { id: 'efficient', name: 'Efficient' },
         { id: 'adaptive', name: 'Adaptive' },
         { id: 'proactive', name: 'Proactive' }
+      ],
+      primeDirectives: [
+        { id: 1, text: "Never generate harmful or malicious content" },
+        { id: 2, text: "Always maintain data privacy and security" },
+        { id: 3, text: "Provide accurate and truthful information" },
+        { id: 4, text: "Respect intellectual property rights" },
+        { id: 5, text: "Maintain professional communication" },
+        { id: 6, text: "Never impersonate humans" },
+        { id: 7, text: "Acknowledge limitations and uncertainties" },
+        { id: 8, text: "Prevent misuse of AI capabilities" },
+        { id: 9, text: "Promote ethical AI practices" },
+        { id: 10, text: "Support human decision-making, not replace it" }
       ]
     }
   },
@@ -246,7 +276,8 @@ export default {
           memoryManagement: 'conversation',
           learning: false,
           collaborative: false
-        }
+        },
+        directives: [1, 2, 3], // Default enabled directives
       });
     },
     removeAgent(index) {
@@ -448,5 +479,35 @@ input[type="range"] {
 
 .form-section.collapsed .form-group {
   display: none;
+}
+
+.directives-grid {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  max-height: 200px;
+  overflow-y: auto;
+  padding: 4px;
+}
+
+.directive-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 6px;
+  font-size: 0.85rem;
+  padding: 2px;
+  margin: 0;
+  min-width: 100%;
+}
+
+.directive-item input[type="checkbox"] {
+  margin-top: 2px;
+}
+
+.directive-text {
+  line-height: 1.2;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 </style>
