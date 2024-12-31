@@ -78,18 +78,18 @@ export default {
 <style scoped>
 .activity-widget {
   position: fixed;
-  background: white;
-  border-radius: 8px;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+  background: var(--background-card);
+  border: 1px solid var(--border-weak);
+  border-radius: 2px;
+  box-shadow: var(--shadow-layer);
   width: 400px;
   z-index: 1000;
 }
 
 .widget-header {
   padding: 8px 12px;
-  background-color: var(--primary-color);
-  color: white;
-  border-radius: 8px 8px 0 0;
+  background: var(--background-secondary);
+  border-bottom: 1px solid var(--border-weak);
   cursor: move;
   display: flex;
   justify-content: space-between;
@@ -99,16 +99,21 @@ export default {
 
 .widget-header h3 {
   margin: 0;
-  font-size: 1rem;
+  font-size: 0.9375rem;
+  color: var(--text-primary);
 }
 
 .control-button {
   background: none;
   border: none;
-  color: white;
+  color: var(--text-secondary);
   cursor: pointer;
-  padding: 0 4px;
-  font-size: 0.8rem;
+  padding: 4px;
+  transition: color 0.2s ease;
+}
+
+.control-button:hover {
+  color: var(--text-primary);
 }
 
 .widget-content {
@@ -127,7 +132,7 @@ export default {
 }
 
 .activity-feed {
-  font-size: 0.85rem;
-  color: var(--text-dark);
+  color: var(--text-secondary);
+  font-size: 0.8125rem;
 }
 </style>
