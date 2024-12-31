@@ -4,6 +4,7 @@
       <ul>
         <li><router-link to="/"><i class="fas fa-home"></i> Dashboard</router-link></li>
         <li><router-link to="/agents">Agents</router-link></li>
+        <li><router-link to="/tools">Tools</router-link></li>
         <li><router-link to="/projects">Projects</router-link></li>
         <li><router-link to="/tasks">Tasks</router-link></li>
         <li><router-link to="/settings">Settings</router-link></li>
