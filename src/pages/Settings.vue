@@ -51,6 +51,36 @@
         </div>
       </section>
 
+      <!-- Redis Section -->
+      <section class="settings-section">
+        <div class="section-header" @click="toggleSection('redis')">
+          <h2>Redis Configuration</h2>
+          <span class="toggle-icon">{{ isExpanded.redis ? '−' : '+' }}</span>
+        </div>
+        <div class="section-content" v-show="isExpanded.redis">
+          <div class="form-group">
+            <label>Host:</label>
+            <input v-model="settings.redis.host" type="text" required placeholder="localhost">
+          </div>
+          <div class="form-group">
+            <label>Port:</label>
+            <input v-model="settings.redis.port" type="number" required placeholder="6379">
+          </div>
+          <div class="form-group">
+            <label>Password:</label>
+            <input v-model="settings.redis.password" type="password">
+          </div>
+          <div class="form-group">
+            <label>Database:</label>
+            <input v-model="settings.redis.db" type="number" min="0" max="15" required placeholder="0">
+          </div>
+          <div class="form-group">
+            <label>TLS:</label>
+            <input type="checkbox" v-model="settings.redis.tls">
+          </div>
+        </div>
+      </section>
+
       <!-- Nextcloud Section -->
       <section class="settings-section">
         <div class="section-header" @click="toggleSection('nextcloud')">
@@ -159,6 +189,13 @@ export default {
           username: '',
           password: ''
         },
+        redis: {
+          host: 'localhost',
+          port: 6379,
+          password: '',
+          db: 0,
+          tls: false
+        },
         nextcloud: {
           url: '',
           username: '',
@@ -191,6 +228,7 @@ export default {
       isExpanded: {
         weaviate: false,
         postgresql: false,
+        redis: false,
         nextcloud: false,
         openai: false,
         ollama: false,
@@ -370,5 +408,12 @@ h3 {
   margin-top: 8px;
   transition: all 0.3s ease-in-out;
   overflow: hidden;
+}
+
+/* Add styles for checkbox in form group */
+.form-group input[type="checkbox"] {
+  width: auto;
+  height: auto;
+  margin-left: 0;
 }
 </style>
