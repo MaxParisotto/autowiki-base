@@ -1,0 +1,91 @@
+<template>
+  <div class="app">
+    <nav class="navbar">
+      <ul>
+        <li><router-link to="/"><i class="fas fa-home"></i> Dashboard</router-link></li>
+        <li><router-link to="/projects">Projects</router-link></li>
+        <li><router-link to="/tasks">Tasks</router-link></li>
+        <li><router-link to="/settings">Settings</router-link></li>
+      </ul>
+    </nav>
+    <main class="content">
+      <router-view />
+    </main>
+  </div>
+</template>
+
+<script>
+export default {
+  name: "App",
+};
+</script>
+
+<style>
+:root {
+  --primary-color: #3498db;
+  --primary-dark: #2980b9;
+  --background-dark: #f8f9fa;
+  --text-light: #ffffff;
+  --text-dark: #2c3e50;
+  --hover-color: #2573a7;
+  --active-color: #1abc9c;
+}
+
+body {
+  margin: 0;
+  background-color: var(--background-dark);
+  color: var(--text-dark);
+}
+
+.app {
+  display: flex;
+  height: 100vh;
+  background-color: var(--background-dark);
+}
+
+.navbar {
+  width: 200px;
+  background-color: var(--primary-color);
+  color: var(--text-light);
+  padding: 20px;
+  box-shadow: 2px 0 5px rgba(0, 0, 0, 0.1);
+}
+
+.navbar ul {
+  list-style: none;
+  padding: 0;
+  margin-top: 20px;
+}
+
+.navbar ul li {
+  margin: 15px 0;
+}
+
+.navbar ul li a {
+  color: var(--text-light);
+  text-decoration: none;
+  display: flex;
+  align-items: center;
+  padding: 10px;
+  border-radius: 5px;
+  transition: all 0.3s ease;
+}
+
+.navbar ul li a:hover {
+  background-color: var(--hover-color);
+}
+
+.navbar ul li a.router-link-active {
+  font-weight: bold;
+  color: var(--text-light);
+  background-color: var(--primary-dark);
+}
+
+.content {
+  flex: 1;
+  padding: 20px;
+  overflow-y: auto;
+  background-color: white;
+  box-shadow: inset 2px 0 5px rgba(0, 0, 0, 0.05);
+}
+</style>
