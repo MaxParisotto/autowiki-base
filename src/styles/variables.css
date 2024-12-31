@@ -1,0 +1,67 @@
+:root {
+  /* Main theme colors */
+  --primary-color: #FF5F1F;
+  --primary-hover: #E65518;
+  --secondary-color: #454545;
+  
+  /* Base colors */
+  --black: #000000;
+  --white: #D1D1D1;
+  
+  /* Text colors */
+  --text-primary: #E6E6E6;
+  --text-secondary: #A0A0A0;
+  --text-muted: #707070;
+  --text-highlight: #FF5F1F;
+  
+  /* Background colors */
+  --bg-canvas: #121212;
+  --bg-primary: #1E1E1E;
+  --bg-secondary: #252525;
+  --bg-hover: #2F2F2F;
+  --bg-card: #1E1E1E;
+  
+  /* Border colors */
+  --border-weak: rgba(255, 255, 255, 0.05);
+  --border-medium: rgba(255, 255, 255, 0.08);
+  --border-strong: rgba(255, 255, 255, 0.12);
+  
+  /* Status colors */
+  --error-text: rgb(185, 28, 28);
+  --success-text: rgb(21, 128, 61);
+  --warning-text: rgb(180, 83, 9);
+  --info-text: rgb(12, 113, 195);
+
+  /* Accent colors */
+  --accent-orange: #FF5F1F;
+  --accent-orange-dark: #E65518;
+  --accent-grey-light: #A0A0A0;
+  --accent-grey-dark: #454545;
+  
+  /* Additional colors */
+  --bg-overlay: rgba(18, 18, 18, 0.8);
+  --bg-elevation-1: #1E1E1E;
+  --bg-elevation-2: #252525;
+  --bg-elevation-3: #2F2F2F;
+  
+  /* Shadow colors */
+  --shadow-1: rgba(0, 0, 0, 0.3);
+  --shadow-2: rgba(0, 0, 0, 0.5);
+  
+  /* Input specific colors */
+  --input-bg: var(--bg-secondary);
+  --input-border: var(--border-medium);
+  --input-text: var(--text-primary);
+  --input-placeholder: var(--text-muted);
+
+  /* Container specific colors */
+  --container-bg: var(--bg-primary);
+  --container-elevated: var(--bg-elevation-1);
+  --container-floating: var(--bg-elevation-2);
+  --container-overlay: var(--bg-elevation-3);
+  
+  /* Container shadows */
+  --shadow-subtle: 0 2px 4px rgba(0, 0, 0, 0.1);
+  --shadow-elevated: 0 4px 6px rgba(0, 0, 0, 0.15);
+  --shadow-floating: 0 8px 16px rgba(0, 0, 0, 0.2);
+}

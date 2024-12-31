@@ -26,7 +26,7 @@ git clone [repository-url]
 cd [project-name]
 ```
 
-2. Install dependencies
+2 Install dependencies
 
 ```bash
 npm install
@@ -34,7 +34,7 @@ npm install
 yarn
 ```
 
-3. Run development server
+3 Run development server
 
 ```bash
 npm run dev
@@ -42,32 +42,12 @@ npm run dev
 yarn dev
 ```
 
-## Development
-
-- The development server will start at `http://localhost:5173`
-- Hot Module Replacement (HMR) is enabled by default
-- Edit files in `src/` to see instant updates
-
 ## Building for Production
 
 ```bash
 npm run build
 # or
 yarn build
-```
-
-## Project Structure
-
-```
-project-root/
-├── public/
-├── src/
-│   ├── assets/
-│   ├── components/
-│   ├── App.vue
-│   └── main.ts
-├── index.html
-└── vite.config.ts
 ```
 
 ## IDE Setup
