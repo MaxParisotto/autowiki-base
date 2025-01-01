@@ -1,51 +1,51 @@
 <template>
   <div class="password-field-wrapper">
-    <form 
-      :id="`${id}-form`"
-      :name="`${id}-form`"
-      class="password-form"
-      @submit.prevent="handleSubmit"
-      aria-label="Password field form"
-    >
-      <div class="password-field-group" role="group">
-        <input
-          :id="`${id}-username`"
-          type="text"
-          :name="`${id}-username`"
-          autocomplete="username"
-          :value="usernameValue"
-          aria-hidden="true"
-          tabindex="-1"
-          style="display: none"
-        >
-        <label :for="id">{{ label }}</label>
-        <input
-          :id="id"
-          :name="id"
-          :value="modelValue"
-          @input="$emit('update:modelValue', ($event.target as HTMLInputElement).value)"
-          @keyup.enter="handleSubmit"
-          type="password"
-          :autocomplete="autocomplete || 'current-password'"
-          :placeholder="placeholder"
-          :aria-describedby="describedby"
-          required
-        >
-      </div>
-    </form>
+    <div class="password-field-group">
+      <input
+        :id="`${id}-username`"
+        type="text"
+        :name="`${id}-username`"
+        :form="formId"
+        autocomplete="username"
+        :value="usernameValue"
+        aria-hidden="true"
+        tabindex="-1"
+        style="display: none"
+      >
+      <label :for="id">{{ label }}</label>
+      <input
+        :id="id"
+        ref="passwordInput"
+        :name="id"
+        :form="formId"
+        :value="modelValue"
+        @input="$emit('update:modelValue', ($event.target as HTMLInputElement).value)"
+        @keyup.enter="handleSubmit"
+        type="password"
+        :autocomplete="autocomplete || 'current-password'"
+        :placeholder="placeholder"
+        :aria-describedby="describedby"
+        required
+      >
+    </div>
   </div>
 </template>
 
 <script setup lang="ts">
-defineProps<{
+import { ref } from 'vue';
+
+const props = defineProps<{
   id: string;
   label: string;
   modelValue: string;
   usernameValue: string;
+  formId?: string;
   placeholder?: string;
   describedby?: string;
   autocomplete?: string;
 }>();
+
+const passwordInput = ref<HTMLInputElement | null>(null);
 
 const emit = defineEmits<{
   (e: 'update:modelValue', value: string): void;
@@ -53,7 +53,9 @@ const emit = defineEmits<{
 }>();
 
 const handleSubmit = () => {
-  emit('submit', modelValue);
+  if (passwordInput.value?.form?.checkValidity()) {
+    emit('submit', props.modelValue);
+  }
 };
 </script>
 

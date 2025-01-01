@@ -1,22 +1,14 @@
 <template>
-  <form @submit.prevent="handleSubmit" class="login-form" id="login-form" role="form">
-    <input 
-      type="text" 
-      id="login-username"
-      name="username" 
-      autocomplete="username" 
-      v-model="username"
-      aria-hidden="true"
-      style="position: absolute; opacity: 0; pointer-events: none;"
-    >
+  <form @submit.prevent="handleSubmit" id="login-form" class="login-form" role="form">
     <PasswordField
       id="agent-password"
       label="Password"
       v-model="password"
       :username-value="username || 'agent'"
+      form-id="login-form"
       placeholder="Enter password"
     />
-    // ...rest of template...
+    <!-- ... rest of template ... -->
   </form>
 </template>
 

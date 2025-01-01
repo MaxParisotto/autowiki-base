@@ -63,6 +63,7 @@
                   label="OpenAI API Key"
                   v-model="settings.openai.apiKey"
                   username-value="openai-user"
+                  form-id="auth-settings-form"
                   placeholder="Enter OpenAI API key"
                   describedby="auth-heading"
                 />
@@ -88,6 +89,7 @@
                   label="Custom GPT API Key"
                   v-model="settings.customGpt.apiKey"
                   username-value="custom-gpt"
+                  form-id="auth-settings-form"
                   placeholder="Enter Custom GPT API key"
                   describedby="auth-heading"
                 />
@@ -130,6 +132,7 @@
                   label="Password"
                   v-model="settings.redis.password"
                   username-value="redis"
+                  form-id="connection-settings-form"
                   placeholder="Enter Redis password"
                   describedby="auth-heading"
                 />
@@ -156,6 +159,7 @@
                   label="Password"
                   v-model="settings.nextcloud.password"
                   username-value="nextcloud"
+                  form-id="connection-settings-form"
                   placeholder="Enter Nextcloud password"
                   describedby="auth-heading"
                 />
@@ -214,6 +218,7 @@
                   label="API Key"
                   v-model="settings.rag.vectorStore.apiKey"
                   username-value="vector-store"
+                  form-id="rag-settings-form"
                   placeholder="Vector store API key"
                   describedby="auth-heading"
                 />
