@@ -1,12 +1,15 @@
 <script setup>
 import { computed } from 'vue'
 import { useRoute } from 'vue-router'
+import { IconDashboard, IconSettings, IconWeaviate } from './icons'
 
 const route = useRoute()
 const currentPath = computed(() => route.path)
 
 const navItems = [
-  // Add any remaining navigation items here
+  { path: '/', label: 'Dashboard', icon: IconDashboard },
+  { path: '/settings', label: 'Settings', icon: IconSettings },
+  { path: '/weaviate', label: 'Weaviate', icon: IconWeaviate }
 ]
 </script>
 
