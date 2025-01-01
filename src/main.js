@@ -1,29 +1,60 @@
-import { createApp } from "vue";
-import App from "./App.vue";
-import router from "./router";
-import { createPinia } from 'pinia';
-import '@vueuse/core';
-import VTooltip from 'v-tooltip';
+import { createApp } from 'vue'
+import App from './App.vue'
+import { createRouter, createWebHistory } from 'vue-router'
 
-// Import styles in correct order
+// Import all CSS files from the "styles" folder
 import './styles/tailwind.css'
-import './styles/variables.css'
 import './styles/base.css'
 import './styles/components.css'
+import './styles/reset.css'
+import './styles/variables.css'
 
-// Create app instance
-const app = createApp(App);
-app.use(VTooltip);
+const router = createRouter({
+  history: createWebHistory(),
+  routes: [
+    {
+      path: '/',
+      name: 'Dashboard',
+      component: () => import('./pages/Dashboard.vue')
+    },
+    {
+      path: '/tasks',
+      name: 'Tasks',
+      component: () => import('./pages/Tasks.vue')
+    },
+    {
+      path: '/weaviate',
+      name: 'Weaviate',
+      component: () => import('./pages/Weaviate.vue')
+    },
+    {
+      path: '/agents',
+      name: 'Agents',
+      component: () => import('./pages/Agents.vue')
+    },
+    {
+      path: '/projects',
+      name: 'Projects',
+      component: () => import('./pages/Projects.vue')
+    },
+    {
+      path: '/tools',
+      name: 'Tools',
+      component: () => import('./pages/Tools.vue')
+    },
+    {
+      path: '/settings',
+      name: 'Settings',
+      component: () => import('./pages/Settings.vue')
+    },
+    {
+      path: '/:pathMatch(.*)*',
+      name: 'NotFound',
+      redirect: '/'
+    }
+  ]
+})
 
-// Initialize Pinia
-const pinia = createPinia();
-app.use(pinia);
-
-// Add router
-app.use(router);
-
-// Mount app
-app.mount("#app");
-
-// Log initialization
-console.log('App initialized');
+const app = createApp(App)
+app.use(router)
+app.mount('#app')

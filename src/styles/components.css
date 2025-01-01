@@ -16,7 +16,7 @@
     @apply bg-accent-orange text-black;
   }
   .badge-secondary {
-    @apply bg-elevation-2 text-text-primary hover:bg-elevation-2-hover;
+    @apply bg-elevation-2 text-text-primary;
   }
 
   /* Dropdown */
@@ -95,7 +95,6 @@
     @apply w-full mt-1 rounded-lg bg-elevation-2 border-border-weak;
   }
   .btn-primary {
-    @apply px-4 py-2 bg-accent-orange hover:bg-accent-orange-dark 
-           text-black rounded-lg;
+    @apply px-4 py-2 bg-accent-orange text-black rounded-lg; /* Removed hover:bg-accent-orange-dark */
   }
 }

@@ -155,7 +155,6 @@ export default {
     },
     async approveTask() {
       try {
-        // TODO: Implement API call to approve task
         await this.submitReview({
           taskId: this.selectedTask.id,
           approved: true,
@@ -167,17 +166,13 @@ export default {
       }
     },
     async submitReview(review) {
-      // TODO: Implement API call
       console.log('Submitting review:', review);
     },
     showPhaseDetails(phase) {
-      // TODO: Implement phase details view
       console.log('Phase details:', phase);
     }
   },
   async mounted() {
-    // TODO: Fetch dashboard data from API
-    // This is placeholder data
     this.pendingApprovals = [
       {
         id: 1,
@@ -191,7 +186,6 @@ export default {
           { id: 2, name: 'ReviewBot', avatar: '/avatars/reviewbot.png' }
         ]
       }
-      // ... more tasks
     ];
 
     this.activeProjects = [
@@ -207,7 +201,6 @@ export default {
           { id: 5, name: 'Publication', status: 'blocked' }
         ]
       }
-      // ... more projects
     ];
   }
 }

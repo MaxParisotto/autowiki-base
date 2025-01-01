@@ -6,25 +6,23 @@
         <h1 class="text-xl font-bold text-accent-orange">AutoWiki</h1>
       </div>
       <ul class="p-2 space-y-1">
-        <li v-for="item in menuItems" :key="item.path">
+        <li v-for="route in navigationItems" :key="route.path">
           <router-link 
-            :to="item.path"
-            v-tooltip="item.tooltip"
+            :to="route.path"
             class="flex items-center px-4 py-2 rounded-lg text-sm transition-colors"
             :class="[
-              $route.path === item.path 
+              $route.path === route.path
                 ? 'bg-accent-orange text-black font-medium'
                 : 'text-text-secondary hover:bg-elevation-2'
             ]"
           >
-            <component :is="item.icon" class="w-5 h-5 mr-3" />
-            {{ item.name }}
+            <component :is="route.icon" class="w-5 h-5 mr-3" />
+            {{ route.name }}
           </router-link>
         </li>
       </ul>
     </nav>
 
-    <!-- Main Content -->
     <main class="flex-1 overflow-auto">
       <router-view v-slot="{ Component }">
         <transition name="fade" mode="out-in" appear>
@@ -37,27 +35,27 @@
 </template>
 
 <script setup lang="ts">
-import { ref } from 'vue';
-import ActivityWidget from './components/ActivityWidget.vue';
+import { computed } from 'vue'
+import ActivityWidget from './components/ActivityWidget.vue'
 import {
   HomeIcon,
-  UserGroupIcon,
-  WrenchIcon,
-  FolderIcon,
-  ClipboardDocumentIcon,
-  Cog6ToothIcon,
+  ClipboardDocumentListIcon,
   ServerIcon,
-} from '@heroicons/vue/24/outline';
+  UserGroupIcon,
+  FolderIcon,
+  WrenchScrewdriverIcon,
+  Cog6ToothIcon
+} from '@heroicons/vue/24/outline'
 
-const menuItems = ref([
-  { name: 'Dashboard', path: '/', icon: HomeIcon, tooltip: 'Home Dashboard' },
-  { name: 'Agents', path: '/agents', icon: UserGroupIcon, tooltip: 'Manage Agents' },
-  { name: 'Tools', path: '/tools', icon: WrenchIcon, tooltip: 'Available Tools' },
-  { name: 'Projects', path: '/projects', icon: FolderIcon, tooltip: 'Your Projects' },
-  { name: 'Tasks', path: '/tasks', icon: ClipboardDocumentIcon, tooltip: 'Active Tasks' },
-  { name: 'Weaviate', path: '/weaviate', icon: ServerIcon, tooltip: 'Vector Database' },
-  { name: 'Settings', path: '/settings', icon: Cog6ToothIcon, tooltip: 'System Settings' },
-]);
+const navigationItems = [
+  { path: '/', name: 'Dashboard', icon: HomeIcon },
+  { path: '/tasks', name: 'Tasks', icon: ClipboardDocumentListIcon },
+  { path: '/weaviate', name: 'Weaviate', icon: ServerIcon },
+  { path: '/agents', name: 'Agents', icon: UserGroupIcon },
+  { path: '/projects', name: 'Projects', icon: FolderIcon },
+  { path: '/tools', name: 'Tools', icon: WrenchScrewdriverIcon },
+  { path: '/settings', name: 'Settings', icon: Cog6ToothIcon }
+]
 </script>
 
 <style scoped>

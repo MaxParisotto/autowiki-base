@@ -15,6 +15,7 @@
                  placeholder="Search tasks..."
                  class="w-full bg-elevation-3 border border-border-weak rounded-lg px-4 py-2 text-text-primary placeholder-text-secondary">
         </div>
+        <!-- If the filter is unused, consider removing or commenting it out:
         <div class="flex gap-2">
           <select class="bg-elevation-3 border border-border-weak rounded-lg px-4 py-2 text-text-primary">
             <option value="all">All Status</option>
@@ -22,12 +23,8 @@
             <option value="in-progress">In Progress</option>
             <option value="completed">Completed</option>
           </select>
-          <select class="bg-elevation-3 border border-border-weak rounded-lg px-4 py-2 text-text-primary">
-            <option value="all">All Projects</option>
-            <option value="docs">Documentation</option>
-            <option value="api">API</option>
-          </select>
         </div>
+        -->
       </div>
     </div>
 
