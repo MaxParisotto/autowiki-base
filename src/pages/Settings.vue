@@ -274,13 +274,13 @@
 
 <script setup lang="ts">
 import { onMounted, ref } from 'vue'
-import { storeToRefs } from 'pinia' // Add this import
+import { storeToRefs } from 'pinia'
 import { useSettingsStore } from '../stores/settingsStore'
 import { toast } from 'vue-sonner'
 import { testDatabaseConnections } from '../utils/api'
 
 const settingsStore = useSettingsStore()
-const { settings, loading, error } = storeToRefs(settingsStore) // Now storeToRefs is defined
+const { settings, loading, error } = storeToRefs(settingsStore)
 
 onMounted(async () => {
   try {
@@ -292,12 +292,8 @@ onMounted(async () => {
 
 const saveSettings = async () => {
   try {
-    const success = await settingsStore.saveSettings(settings)
-    if (success) {
-      toast.success('Settings saved successfully')
-    } else {
-      toast.error('Failed to save settings')
-    }
+    await settingsStore.saveSettings(settings.value)
+    toast.success('Settings saved successfully')
   } catch (err) {
     toast.error('Error saving settings')
   }

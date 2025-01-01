@@ -63,7 +63,9 @@ app.get('/api/settings', async (_req: Request, res: Response) => {
         port: config.redis.port,
         db: config.redis.db
       },
-      apiKey: '' // Add default value
+      openai: {
+        apiKey: '' // Default empty API key
+      }
     })
   } catch (error) {
     console.error('Failed to fetch settings:', error)
