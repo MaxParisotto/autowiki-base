@@ -1,149 +1,72 @@
 <template>
-  <div class="tasks-container">
-    <div class="tasks-header">
-      <h1>Task Management</h1>
-      <button class="new-task-button" @click="createNewTask">Create New Task</button>
+  <div class="p-6">
+    <div class="flex justify-between items-center mb-6">
+      <h1 class="text-2xl font-bold text-text-primary">Tasks</h1>
+      <button class="bg-accent-orange hover:bg-accent-orange-dark text-black px-4 py-2 rounded-lg transition-colors font-medium">
+        New Task
+      </button>
     </div>
 
-    <div class="tasks-grid">
-      <!-- Task Creation/Edit Form -->
-      <div v-if="editingTask" class="task-form">
-        <div class="form-section">
-          <h3>Task Definition</h3>
-          <div class="form-group">
-            <label>Title:</label>
-            <input v-model="editingTask.title" type="text" required>
-          </div>
-          <div class="form-group">
-            <label>Description:</label>
-            <textarea v-model="editingTask.description" rows="3" required></textarea>
-          </div>
-          <div class="form-group">
-            <label>Priority:</label>
-            <select v-model="editingTask.priority">
-              <option value="low">Low</option>
-              <option value="medium">Medium</option>
-              <option value="high">High</option>
-              <option value="urgent">Urgent</option>
-            </select>
-          </div>
+    <!-- Tasks Filter -->
+    <div class="bg-elevation-2 rounded-lg p-4 mb-6 border border-border-weak">
+      <div class="flex gap-4 items-center">
+        <div class="flex-1">
+          <input type="text"
+                 placeholder="Search tasks..."
+                 class="w-full bg-elevation-3 border border-border-weak rounded-lg px-4 py-2 text-text-primary placeholder-text-secondary">
         </div>
-
-        <div class="form-section">
-          <h3>Required Skills</h3>
-          <div class="skills-selector">
-            <div class="selected-skills">
-              <div v-for="(skill, index) in editingTask.requiredSkills" 
-                   :key="index" 
-                   class="skill-tag">
-                {{ skill }}
-                <button @click="removeSkill(index)">×</button>
-              </div>
-            </div>
-            <input 
-              v-model="newSkill"
-              @keyup.enter="addSkill"
-              placeholder="Add required skill"
-              type="text"
-            >
-          </div>
+        <div class="flex gap-2">
+          <select class="bg-elevation-3 border border-border-weak rounded-lg px-4 py-2 text-text-primary">
+            <option value="all">All Status</option>
+            <option value="pending">Pending</option>
+            <option value="in-progress">In Progress</option>
+            <option value="completed">Completed</option>
+          </select>
+          <select class="bg-elevation-3 border border-border-weak rounded-lg px-4 py-2 text-text-primary">
+            <option value="all">All Projects</option>
+            <option value="docs">Documentation</option>
+            <option value="api">API</option>
+          </select>
         </div>
+      </div>
+    </div>
 
-        <div class="form-section">
-          <h3>Knowledge Requirements</h3>
-          <div class="knowledge-requirements">
-            <div class="form-group">
-              <label>Context Query:</label>
-              <textarea 
-                v-model="editingTask.knowledge.contextQuery" 
-                placeholder="Define what knowledge to retrieve from Weaviate"
-                rows="2"
-              ></textarea>
-            </div>
-            <div class="form-group">
-              <label>Relevant Documents:</label>
-              <div class="document-list">
-                <div v-for="(doc, index) in editingTask.knowledge.documents" 
-                     :key="index"
-                     class="document-item">
-                  <span>{{ doc.title }}</span>
-                  <button @click="removeDocument(index)">×</button>
+    <!-- Tasks List -->
+    <div class="bg-elevation-2 rounded-lg border border-border-weak">
+      <div v-for="task in tasks" 
+           :key="task.id" 
+           class="border-b border-border-weak last:border-b-0">
+        <div class="p-4 hover:bg-elevation-3 transition-colors">
+          <div class="flex items-start justify-between">
+            <div class="flex items-start space-x-4">
+              <input type="checkbox" 
+                     :checked="task.completed"
+                     class="mt-1 bg-elevation-3 border-border-medium rounded">
+              <div>
+                <h3 class="text-text-primary font-medium mb-1">{{ task.title }}</h3>
+                <p class="text-text-secondary text-sm">{{ task.description }}</p>
+                <div class="flex items-center gap-2 mt-2">
+                  <span class="badge" :class="getStatusBadgeClass(task.status)">
+                    {{ task.status }}
+                  </span>
+                  <span class="text-text-secondary text-xs">{{ task.dueDate }}</span>
                 </div>
               </div>
             </div>
-          </div>
-        </div>
-
-        <div class="form-section">
-          <h3>Required Tools</h3>
-          <div class="tools-selector">
-            <div v-for="tool in availableTools" 
-                 :key="tool.id"
-                 class="tool-item"
-                 :class="{ selected: isToolSelected(tool.id) }"
-                 @click="toggleTool(tool.id)">
-              <span class="tool-name">{{ tool.name }}</span>
-              <span class="tool-type">{{ tool.type }}</span>
+            <div class="flex items-center gap-2">
+              <div class="flex -space-x-2">
+                <img v-for="assignee in task.assignees" 
+                     :key="assignee.id"
+                     :src="assignee.avatar"
+                     :alt="assignee.name"
+                     :title="assignee.name"
+                     class="w-8 h-8 rounded-full border-2 border-elevation-2">
+              </div>
+              <button class="text-text-secondary hover:text-text-primary">
+                <span class="sr-only">Options</span>
+                <!-- Add your icon here -->
+              </button>
             </div>
-          </div>
-        </div>
-
-        <div class="form-section">
-          <h3>Execution Parameters</h3>
-          <div class="form-group">
-            <label>Timeout (minutes):</label>
-            <input v-model.number="editingTask.execution.timeout" type="number" min="1">
-          </div>
-          <div class="form-group">
-            <label>Max Retries:</label>
-            <input v-model.number="editingTask.execution.maxRetries" type="number" min="0">
-          </div>
-          <div class="form-group">
-            <label>Error Handling:</label>
-            <select v-model="editingTask.execution.errorHandling">
-              <option value="stop">Stop on Error</option>
-              <option value="continue">Continue on Error</option>
-              <option value="retry">Retry on Error</option>
-            </select>
-          </div>
-        </div>
-
-        <div class="form-actions">
-          <button @click="cancelEdit" class="cancel-button">Cancel</button>
-          <button @click="saveTask" class="save-button">Save Task</button>
-        </div>
-      </div>
-
-      <!-- Tasks List -->
-      <div v-else class="tasks-list">
-        <div v-for="task in tasks" :key="task.id" class="task-card">
-          <div class="task-header">
-            <h3>{{ task.title }}</h3>
-            <span class="task-priority" :class="task.priority">
-              {{ task.priority }}
-            </span>
-          </div>
-          <p class="task-description">{{ task.description }}</p>
-          <div class="task-meta">
-            <div class="task-skills">
-              <span v-for="skill in task.requiredSkills" 
-                    :key="skill" 
-                    class="skill-tag">
-                {{ skill }}
-              </span>
-            </div>
-            <div class="task-tools">
-              <span v-for="toolId in task.requiredTools" 
-                    :key="toolId" 
-                    class="tool-tag">
-                {{ getToolName(toolId) }}
-              </span>
-            </div>
-          </div>
-          <div class="task-actions">
-            <button @click="editTask(task)">Edit</button>
-            <button @click="deleteTask(task.id)">Delete</button>
-            <button @click="assignTask(task)">Assign</button>
           </div>
         </div>
       </div>
@@ -156,32 +79,31 @@ export default {
   name: 'Tasks',
   data() {
     return {
-      tasks: [],
-      editingTask: null,
-      newSkill: '',
-      availableTools: [], // This would be populated from the Tools page
+      tasks: [
+        {
+          id: 1,
+          title: 'Review API Documentation',
+          description: 'Review and update the API documentation for the new endpoints',
+          status: 'in-progress',
+          completed: false,
+          dueDate: 'Tomorrow at 5:00 PM',
+          assignees: [
+            { id: 1, name: 'AI Bot 1', avatar: '/avatars/bot1.png' },
+            { id: 2, name: 'AI Bot 2', avatar: '/avatars/bot2.png' }
+          ]
+        }
+        // Add more tasks...
+      ]
     }
   },
   methods: {
-    createNewTask() {
-      this.editingTask = {
-        title: '',
-        description: '',
-        priority: 'medium',
-        requiredSkills: [],
-        knowledge: {
-          contextQuery: '',
-          documents: []
-        },
-        requiredTools: [],
-        execution: {
-          timeout: 30,
-          maxRetries: 3,
-          errorHandling: 'retry'
-        }
-      };
-    },
-    // ... implement other methods ...
+    getStatusBadgeClass(status) {
+      return {
+        'pending': 'badge-secondary',
+        'in-progress': 'badge-primary',
+        'completed': 'bg-success-text bg-opacity-20 text-success-text'
+      }[status] || 'badge-secondary'
+    }
   }
 }
 </script>

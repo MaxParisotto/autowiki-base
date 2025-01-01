@@ -1,115 +1,34 @@
 <template>
-  <div class="bg-elevation-1 p-6 rounded-lg">
+  <div class="p-6">
     <h1 class="text-2xl font-bold mb-6 text-text-primary">Tools</h1>
-    <div class="tools-container">
-      <h1>AI Tools Management</h1>
-      <div class="tools-grid">
-        <div v-for="(tool, index) in tools" :key="index" class="tool-card">
-          <div class="tool-header">
-            <h3>{{ tool.name }}</h3>
-            <div class="tool-actions">
-              <button class="tool-status" :class="{ active: tool.active }">
-                {{ tool.active ? 'Active' : 'Inactive' }}
-              </button>
-              <button class="delete-button" @click="removeTool(index)">×</button>
-            </div>
+    <div class="space-y-6">
+      <!-- Tools Grid -->
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+        <div v-for="tool in tools" 
+             :key="tool.id" 
+             class="bg-elevation-2 hover:bg-elevation-2-hover rounded-lg p-4 border border-border-weak transition-all duration-200">
+          <div class="flex justify-between items-start mb-3">
+            <span class="badge badge-primary">{{ tool.category }}</span>
+            <span class="badge" :class="getStatusBadgeClass(tool.status)">
+              {{ tool.status }}
+            </span>
           </div>
           
-          <div class="tool-content">
-            <div class="form-group">
-              <label>Name:</label>
-              <input v-model="tool.name" type="text" required>
+          <h3 class="text-text-primary font-medium mb-2">{{ tool.name }}</h3>
+          <p class="text-text-secondary text-sm mb-4">{{ tool.description }}</p>
+          
+          <div class="flex items-center justify-between mt-4">
+            <div class="flex items-center space-x-2">
+              <span class="text-text-secondary text-sm">{{ tool.usageCount }} uses</span>
+              <span class="text-text-secondary">•</span>
+              <span class="text-text-secondary text-sm">{{ tool.lastUsed }}</span>
             </div>
-            
-            <div class="form-group">
-              <label>Type:</label>
-              <select v-model="tool.type">
-                <option value="api">API Integration</option>
-                <option value="function">Function Call</option>
-                <option value="script">Script Execution</option>
-                <option value="database">Database Operation</option>
-                <option value="custom">Custom Tool</option>
-              </select>
-            </div>
-
-            <div class="form-group">
-              <label>Description:</label>
-              <textarea v-model="tool.description" rows="2"></textarea>
-            </div>
-
-            <div class="form-group">
-              <label>Parameters:</label>
-              <div class="parameters-list">
-                <div v-for="(param, pIndex) in tool.parameters" :key="pIndex" class="parameter-item">
-                  <input v-model="param.name" placeholder="Name" type="text">
-                  <select v-model="param.type">
-                    <option value="string">String</option>
-                    <option value="number">Number</option>
-                    <option value="boolean">Boolean</option>
-                    <option value="array">Array</option>
-                    <option value="object">Object</option>
-                  </select>
-                  <input v-model="param.description" placeholder="Description" type="text">
-                  <button @click="removeParameter(tool, pIndex)" class="remove-param">×</button>
-                </div>
-                <button @click="addParameter(tool)" class="add-param">+ Add Parameter</button>
-              </div>
-            </div>
-
-            <div class="form-group">
-              <label>Required Skills:</label>
-              <div class="skills-tags">
-                <div v-for="(skill, sIndex) in tool.requiredSkills" :key="sIndex" class="skill-tag">
-                  {{ skill }}
-                  <button @click="removeSkill(tool, sIndex)" class="remove-skill">×</button>
-                </div>
-                <input 
-                  v-model="tool.newSkill"
-                  @keyup.enter="addSkill(tool)"
-                  placeholder="Add skill and press enter"
-                  type="text"
-                >
-              </div>
-            </div>
-
-            <div class="form-group">
-              <label>Authentication:</label>
-              <select v-model="tool.auth.type">
-                <option value="none">None</option>
-                <option value="api_key">API Key</option>
-                <option value="oauth">OAuth</option>
-                <option value="basic">Basic Auth</option>
-              </select>
-            </div>
-
-            <div class="form-group" v-if="tool.auth.type !== 'none'">
-              <label>Auth Config:</label>
-              <textarea v-model="tool.auth.config" rows="2" placeholder="Authentication configuration"></textarea>
-            </div>
-
-            <div class="form-group">
-              <label>Rate Limiting:</label>
-              <div class="rate-limit-config">
-                <input v-model.number="tool.rateLimit.requests" type="number" placeholder="Requests">
-                <span>per</span>
-                <input v-model.number="tool.rateLimit.period" type="number" placeholder="Period">
-                <select v-model="tool.rateLimit.unit">
-                  <option value="second">Second</option>
-                  <option value="minute">Minute</option>
-                  <option value="hour">Hour</option>
-                </select>
-              </div>
-            </div>
+            <button @click="launchTool(tool)" 
+                    class="bg-accent-orange hover:bg-accent-orange-dark text-black px-4 py-2 rounded-lg transition-colors font-medium">
+              Launch
+            </button>
           </div>
         </div>
-
-        <div class="add-tool-card" @click="addTool">
-          <span>+ Add New Tool</span>
-        </div>
-      </div>
-
-      <div class="actions">
-        <button class="save-button" @click="saveTools">Save Changes</button>
       </div>
     </div>
   </div>
@@ -122,71 +41,29 @@ export default {
     return {
       tools: [
         {
-          name: '',
-          type: 'api',
-          description: '',
-          parameters: [],
-          requiredSkills: [],
-          newSkill: '',
-          auth: {
-            type: 'none',
-            config: ''
-          },
-          rateLimit: {
-            requests: 60,
-            period: 1,
-            unit: 'minute'
-          },
-          active: true
+          id: 1,
+          name: 'API Documentation Generator',
+          description: 'Automatically generate API documentation from code',
+          category: 'Documentation',
+          status: 'active',
+          usageCount: 245,
+          lastUsed: '2 hours ago'
         }
+        // Add more tools...
       ]
     }
   },
   methods: {
-    addTool() {
-      this.tools.push({
-        name: '',
-        type: 'api',
-        description: '',
-        parameters: [],
-        requiredSkills: [],
-        newSkill: '',
-        auth: {
-          type: 'none',
-          config: ''
-        },
-        rateLimit: {
-          requests: 60,
-          period: 1,
-          unit: 'minute'
-        },
-        active: true
-      });
+    getStatusBadgeClass(status) {
+      return {
+        'active': 'badge-secondary',
+        'maintenance': 'badge bg-warning-text bg-opacity-20 text-warning-text',
+        'deprecated': 'badge bg-error-text bg-opacity-20 text-error-text'
+      }[status] || 'badge-secondary'
     },
-    removeTool(index) {
-      this.tools.splice(index, 1);
-    },
-    addParameter(tool) {
-      tool.parameters.push({
-        name: '',
-        type: 'string',
-        description: ''
-      });
-    },
-    removeParameter(tool, index) {
-      tool.parameters.splice(index, 1);
-    },
-    addSkill(tool) {
-      if (tool.newSkill.trim()) {
-        tool.requiredSkills.push(tool.newSkill.trim());
-        tool.newSkill = '';
-      }
-    },
-    removeSkill(tool, index) {
-      tool.requiredSkills.splice(index, 1);
-    },
-    saveTools() {
-      console.log('Saving tools:', this.tools);
+    launchTool(tool) {
+      // Implement tool launch logic
+      console.log('Launching tool:', tool.name)
     }
   }
 }

@@ -9,7 +9,7 @@
   </div>
 </template>
 
-<script></script>
+<script>
 export default {
   name: 'DefaultLayout',
   props: {

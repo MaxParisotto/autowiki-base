@@ -6,7 +6,7 @@
           <router-link 
             :to="item.path" 
             :title="item.tooltip"
-            class="nav-link tooltip-trigger"
+            class="nav-link"
           >
             <component :is="item.icon" class="w-5 h-5 mr-2" />
             {{ item.name }}
@@ -290,17 +290,8 @@ tr:nth-child(even) {
 }
 
 .nav-link {
-  display: flex;
-  align-items: center;
-  padding: 0.75rem;
-  border-radius: 0.375rem;
-  font-size: 0.875rem;
-  font-weight: 500;
-  transition: all 0.2s;
-}
-.nav-link:hover {
-  background-color: var(--bg-elevation-2);
-  color: var(--text-primary);
+  @apply flex items-center px-4 py-2 text-text-secondary rounded-lg;
+  /* Remove hover effects and transitions */
 }
 
 .router-link-active {

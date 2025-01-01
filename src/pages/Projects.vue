@@ -1,7 +1,6 @@
 <template>
   <DefaultLayout title="Projects">
-    <!-- Project Grid -->
-    <div class="grid grid-cols-1 lg:grid-cols-3 gap-4">
+    <div class="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-4">
       <div v-for="project in projects" 
            :key="project.id" 
            class="bg-elevation-2 hover:bg-elevation-2-hover rounded-lg p-4 border border-border-weak transition-all duration-200">
@@ -14,12 +13,12 @@
             <!-- Add your icon here -->
           </button>
         </div>
-        
+
         <h3 class="text-text-primary font-medium text-lg mb-2">{{ project.name }}</h3>
         <p class="text-text-secondary text-sm mb-4">{{ project.description }}</p>
-        
+
+        <!-- Progress Section -->
         <div class="space-y-4">
-          <!-- Progress Bar -->
           <div>
             <div class="h-2 bg-elevation-1 rounded-full overflow-hidden">
               <div class="h-full bg-accent-orange transition-all duration-300"
@@ -32,7 +31,6 @@
             </div>
           </div>
 
-          <!-- Team Members -->
           <div class="flex items-center justify-between">
             <div class="flex -space-x-2">
               <img v-for="member in project.team" 
@@ -41,8 +39,8 @@
                    :alt="member.name"
                    class="w-8 h-8 rounded-full border-2 border-elevation-2">
             </div>
-            <button class="bg-accent-orange hover:bg-accent-orange-dark text-black px-4 py-2 rounded-lg transition-colors font-medium">
-              View Details
+            <button class="text-accent-orange hover:text-accent-orange-dark font-medium transition-colors">
+              View Details →
             </button>
           </div>
         </div>
@@ -55,10 +53,26 @@
 import DefaultLayout from '../layouts/DefaultLayout.vue'
 
 export default {
-  components: { DefaultLayout },
+  name: 'Projects',
+  components: {
+    DefaultLayout
+  },
   data() {
     return {
-      projects: [] // Will be populated from API
+      projects: [
+        {
+          id: 1,
+          name: 'API Documentation',
+          description: 'Comprehensive documentation for the new API endpoints',
+          status: 'active',
+          progress: 75,
+          team: [
+            { id: 1, name: 'AI Bot 1', avatar: '/avatars/bot1.png' },
+            { id: 2, name: 'AI Bot 2', avatar: '/avatars/bot2.png' }
+          ]
+        }
+        // Add more projects...
+      ]
     }
   },
   methods: {
@@ -66,26 +80,9 @@ export default {
       return {
         'active': 'badge-primary',
         'completed': 'badge-secondary',
-        'paused': 'badge bg-warning-text bg-opacity-20 text-warning-text',
+        'paused': 'badge bg-warning-text bg-opacity-20 text-warning-text'
       }[status] || 'badge-secondary'
     }
-  },
-  async mounted() {
-    // Placeholder data
-    this.projects = [
-      {
-        id: 1,
-        name: 'API Documentation',
-        description: 'Comprehensive documentation for the new API endpoints',
-        status: 'active',
-        progress: 75,
-        team: [
-          { id: 1, name: 'AI Bot 1', avatar: '/avatars/bot1.png' },
-          { id: 2, name: 'AI Bot 2', avatar: '/avatars/bot2.png' }
-        ]
-      }
-      // Add more projects...
-    ]
   }
 }
 </script>
