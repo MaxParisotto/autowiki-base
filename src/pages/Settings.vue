@@ -312,7 +312,10 @@ const redisStatus = ref({
 })
 
 async function testConnections() {
+  if (isTesting.value) return
+  
   isTesting.value = true
+  toast.info('Testing database connections...')
   
   try {
     const { mysql, redis } = await testDatabaseConnections()
@@ -320,24 +323,33 @@ async function testConnections() {
     mysqlStatus.value = {
       connected: mysql.connected,
       message: mysql.connected ? 'Connected' : 'Failed',
-      details: mysql.details
+      details: mysql.details || ''
     }
     
     redisStatus.value = {
       connected: redis.connected,
       message: redis.connected ? 'Connected' : 'Failed',
-      details: redis.details
+      details: redis.details || ''
+    }
+
+    if (mysql.connected && redis.connected) {
+      toast.success('All database connections successful')
+    } else {
+      toast.error('Some database connections failed')
     }
   } catch (error: any) {
+    const errorMessage = error.message || 'Failed to test connections'
+    toast.error(errorMessage)
+    
     mysqlStatus.value = {
       connected: false,
       message: 'Failed',
-      details: error.message
+      details: errorMessage
     }
     redisStatus.value = {
       connected: false,
       message: 'Failed', 
-      details: error.message
+      details: errorMessage
     }
   } finally {
     isTesting.value = false

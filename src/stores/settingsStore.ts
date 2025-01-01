@@ -53,11 +53,20 @@ export const useSettingsStore = defineStore('settings', () => {
     loading.value = true
     error.value = null
     try {
-      const response = await api.get('/api/settings')
-      settings.value = response.data
-    } catch (err) {
-      error.value = 'Failed to load settings'
+      const response = await api.get('/settings')
+      if (response.status === 200 && response.data) {
+        settings.value = {
+          ...defaultSettings,
+          ...response.data
+        }
+      } else {
+        throw new Error('Invalid settings data received')
+      }
+    } catch (err: any) {
+      error.value = err.message || 'Failed to load settings'
       console.error('Error loading settings:', err)
+      // Keep default settings on error
+      settings.value = { ...defaultSettings }
     } finally {
       loading.value = false
     }
@@ -67,10 +76,12 @@ export const useSettingsStore = defineStore('settings', () => {
     loading.value = true
     error.value = null
     try {
-      await api.post('/api/settings', settings.value)
-    } catch (err) {
-      error.value = 'Failed to save settings'
+      await api.post('/settings', settings.value)
+      return true
+    } catch (err: any) {
+      error.value = err.message || 'Failed to save settings'
       console.error('Error saving settings:', err)
+      return false
     } finally {
       loading.value = false
     }
