@@ -72,7 +72,20 @@ export default {
         'border-medium': 'var(--border-medium)',
         'border-strong': 'var(--border-strong)',
       },
-    },
+      backgroundColor: {
+        DEFAULT: 'var(--bg-canvas)',
+        'white': 'var(--bg-elevation-1)', // Override white
+        'gray': {
+          50: 'var(--bg-elevation-1)',
+          100: 'var(--bg-elevation-1)',
+          200: 'var(--bg-elevation-2)',
+          300: 'var(--bg-elevation-2)',
+          400: 'var(--bg-elevation-3)',
+          500: 'var(--bg-elevation-3)',
+          // ...add more as needed
+        }
+      }
+    }
   },
   plugins: [
     require('@tailwindcss/forms'),

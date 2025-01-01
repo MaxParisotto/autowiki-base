@@ -51,12 +51,37 @@
             </div>
             <div class="form-group">
               <label>Expertise Areas:</label>
-              <vue-tags-input
-                v-model="agent.role.expertiseTag"
-                :tags="agent.role.expertise"
-                @tags-changed="newTags => agent.role.expertise = newTags"
-                placeholder="Add expertise and press enter"
-              />
+              <div class="tags-input-container mb-8">
+                <div class="flex gap-2 flex-wrap mb-2">
+                  <span 
+                    v-for="tag in agent.role.expertise" 
+                    :key="tag"
+                    class="inline-flex items-center gap-1 px-3 py-1 bg-elevation-2 rounded-full"
+                  >
+                    {{ tag }}
+                    <button 
+                      @click="removeTag(agent, tag)"
+                      class="text-text-secondary hover:text-text-primary"
+                    >
+                      ×
+                    </button>
+                  </span>
+                </div>
+                <div class="flex gap-2">
+                  <input
+                    v-model="agent.role.expertiseTag"
+                    @keydown.enter.prevent="addTag(agent)"
+                    placeholder="Add new tag..."
+                    class="flex-1 px-4 py-2 rounded-lg"
+                  />
+                  <button 
+                    @click="addTag(agent)"
+                    class="bg-accent-orange text-black px-4 py-2 rounded-lg"
+                  >
+                    Add Tag
+                  </button>
+                </div>
+              </div>
             </div>
           </div>
 
@@ -301,6 +326,15 @@ export default {
       if (section) {
         section.classList.toggle('collapsed');
       }
+    },
+    addTag(agent) {
+      if (agent.role.expertiseTag.trim()) {
+        agent.role.expertise.push(agent.role.expertiseTag.trim());
+        agent.role.expertiseTag = '';
+      }
+    },
+    removeTag(agent, tagToRemove) {
+      agent.role.expertise = agent.role.expertise.filter(tag => tag !== tagToRemove);
     }
   },
   mounted() {

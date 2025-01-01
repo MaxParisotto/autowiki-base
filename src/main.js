@@ -1,6 +1,6 @@
 import { createApp } from "vue";
 import App from "./App.vue";
-import router from "./router";
+import router from "./router"; // This will now point to src/router.js
 import '@vueuse/core'
 
 // Import styles in correct order

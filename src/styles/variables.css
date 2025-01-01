@@ -64,4 +64,17 @@
   --shadow-subtle: 0 2px 4px rgba(0, 0, 0, 0.1);
   --shadow-elevated: 0 4px 6px rgba(0, 0, 0, 0.15);
   --shadow-floating: 0 8px 16px rgba(0, 0, 0, 0.2);
+
+  /* Elevation system */
+  --elevation-base: var(--bg-canvas);
+  --elevation-1: var(--bg-elevation-1);
+  --elevation-2: var(--bg-elevation-2);
+  --elevation-3: var(--bg-elevation-3);
+  
+  /* Component-specific backgrounds */
+  --input-bg: var(--elevation-2);
+  --dropdown-bg: var(--elevation-2);
+  --modal-bg: var(--elevation-1);
+  --card-bg: var(--elevation-1);
+  --hover-bg: var(--elevation-3);
 }

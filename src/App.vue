@@ -43,21 +43,89 @@ import {
   UserGroupIcon,
   WrenchIcon,
   FolderIcon,
-  ClipboardListIcon,
-  CogIcon
-} from '@heroicons/vue/outline/index.js'
+  ClipboardDocumentIcon, // Changed from ClipboardListIcon
+  Cog6ToothIcon // Changed from CogIcon
+} from '@heroicons/vue/24/outline' // Changed path to v2 format
 
 const menuItems = ref([
   { name: 'Dashboard', path: '/', icon: HomeIcon, tooltip: 'Home Dashboard' },
   { name: 'Agents', path: '/agents', icon: UserGroupIcon, tooltip: 'Manage Agents' },
   { name: 'Tools', path: '/tools', icon: WrenchIcon, tooltip: 'Available Tools' },
   { name: 'Projects', path: '/projects', icon: FolderIcon, tooltip: 'Your Projects' },
-  { name: 'Tasks', path: '/tasks', icon: ClipboardListIcon, tooltip: 'Active Tasks' },
-  { name: 'Settings', path: '/settings', icon: CogIcon, tooltip: 'System Settings' }
+  { name: 'Tasks', path: '/tasks', icon: ClipboardDocumentIcon, tooltip: 'Active Tasks' }, // Updated icon
+  { name: 'Settings', path: '/settings', icon: Cog6ToothIcon, tooltip: 'System Settings' } // Updated icon
 ])
 </script>
 
 <style lang="postcss">
+/* Global background colors */
+:root {
+  color-scheme: dark;
+}
+
+/* Reset all backgrounds */
+*, *::before, *::after {
+  background-color: transparent;
+}
+
+/* Base container styles */
+.app, 
+.content, 
+.page-container,
+.container,
+.card,
+.panel,
+.section {
+  background-color: var(--bg-canvas);
+}
+
+/* First level elevation */
+.navbar,
+.card,
+.panel,
+.section,
+.dialog,
+.modal {
+  background-color: var(--bg-elevation-1) !important;
+}
+
+/* Second level elevation */
+.dropdown-content,
+input,
+select,
+textarea,
+button:not(.primary),
+.card .card,
+.panel .panel,
+.section .section {
+  background-color: var(--bg-elevation-2) !important;
+}
+
+/* Third level elevation */
+.dropdown-item:hover,
+.card .card .card,
+.panel .panel .panel,
+.section .section .section,
+button:not(.primary):hover {
+  background-color: var(--bg-elevation-3) !important;
+}
+
+/* Ensure form elements have proper styling */
+input, 
+select, 
+textarea {
+  border: 1px solid var(--border-weak);
+  color: var(--text-primary);
+}
+
+/* Ensure modals and dialogs stack properly */
+.modal-backdrop {
+  background-color: rgba(0, 0, 0, 0.5);
+}
+
+.modal-content {
+  background-color: var(--bg-elevation-1) !important;
+}
 
 .app {
   display: flex;
@@ -262,5 +330,37 @@ tr:nth-child(even) {
 .page-container {
   width: 100%;
   height: 100%;
+}
+
+/* Override any remaining white backgrounds */
+:global([class*="bg-white"]) {
+  background-color: var(--bg-elevation-1) !important;
+}
+
+:global([class*="bg-gray"]) {
+  background-color: var(--bg-elevation-2) !important;
+}
+
+/* Force dark backgrounds on common components */
+:global(.dropdown-menu),
+:global(.modal),
+:global(.popover),
+:global(.card),
+:global(.list-group),
+:global(.table),
+:global(.form-control),
+:global(.input-group),
+:global(.btn):not(.btn-primary):not(.btn-accent) {
+  background-color: var(--bg-elevation-1) !important;
+  color: var (--text-primary) !important;
+}
+
+/* Force dark backgrounds on form elements */
+:global(input),
+:global(select),
+:global(textarea) {
+  background-color: var(--bg-elevation-2) !important;
+  border-color: var(--border-weak) !important;
+  color: var(--text-primary) !important;
 }
 </style>
