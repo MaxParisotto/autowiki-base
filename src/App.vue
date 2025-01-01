@@ -44,7 +44,8 @@ import {
   WrenchIcon,
   FolderIcon,
   ClipboardDocumentIcon, // Changed from ClipboardListIcon
-  Cog6ToothIcon // Changed from CogIcon
+  Cog6ToothIcon, // Changed from CogIcon
+  ServerIcon // Add ServerIcon import
 } from '@heroicons/vue/24/outline' // Changed path to v2 format
 
 const menuItems = ref([
@@ -53,6 +54,7 @@ const menuItems = ref([
   { name: 'Tools', path: '/tools', icon: WrenchIcon, tooltip: 'Available Tools' },
   { name: 'Projects', path: '/projects', icon: FolderIcon, tooltip: 'Your Projects' },
   { name: 'Tasks', path: '/tasks', icon: ClipboardDocumentIcon, tooltip: 'Active Tasks' }, // Updated icon
+  { name: 'Weaviate', path: '/weaviate', icon: ServerIcon, tooltip: 'Vector Database' }, // Add Weaviate nav item
   { name: 'Settings', path: '/settings', icon: Cog6ToothIcon, tooltip: 'System Settings' } // Updated icon
 ])
 </script>

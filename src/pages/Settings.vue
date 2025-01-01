@@ -5,41 +5,46 @@
       <!-- General Settings -->
       <div class="bg-elevation-2 rounded-lg p-6 border border-border-weak">
         <h2 class="text-xl font-semibold mb-4 text-text-primary">General Settings</h2>
-        <div class="space-y-4">
-          <div class="flex items-center justify-between p-4 bg-elevation-3 hover:bg-elevation-3-hover rounded-lg transition-colors">
-            // ...existing toggle content...
-          </div>
-
-          <div class="flex items-center justify-between p-4 bg-elevation-3 hover:bg-elevation-3-hover rounded-lg transition-colors">
-            // ...existing notifications content...
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+          <!-- API Selection Cards -->
+          <div v-for="api in apiServices" 
+               :key="api.id"
+               @click="selectApi(api.id)"
+               class="bg-elevation-3 hover:bg-elevation-3-hover rounded-lg p-4 border border-border-weak transition-all duration-200 cursor-pointer"
+               :class="{ 'border-accent-orange': selectedApis.includes(api.id) }">
+            <div class="flex items-center justify-between">
+              <div class="flex items-center gap-3">
+                <component :is="api.icon" class="w-6 h-6 text-text-primary" />
+                <div>
+                  <h3 class="text-text-primary font-medium">{{ api.name }}</h3>
+                  <p class="text-text-secondary text-sm">{{ api.description }}</p>
+                </div>
+              </div>
+              <div class="flex items-center gap-2">
+                <span class="badge" :class="api.configured ? 'badge-primary' : 'badge-secondary'">
+                  {{ api.configured ? 'Configured' : 'Not Set' }}
+                </span>
+                <input type="checkbox" 
+                       :checked="selectedApis.includes(api.id)"
+                       class="bg-elevation-2 border-border-medium rounded text-accent-orange focus:ring-accent-orange">
+              </div>
+            </div>
           </div>
         </div>
       </div>
 
       <!-- API Configuration -->
-      <div class="bg-elevation-2 rounded-lg p-6 border border-border-weak">
-        <h2 class="text-xl font-semibold mb-4 text-text-primary">API Configuration</h2>
-        <div class="space-y-4">
-          <div>
-            <label class="block text-text-primary mb-2">API Key</label>
-            <div class="flex gap-2">
-              <input type="password" 
-                     v-model="apiKey" 
-                     class="flex-1 bg-elevation-3 border border-border-weak rounded-lg px-4 py-2 text-text-primary placeholder:text-text-secondary focus:border-accent-orange focus:ring-1 focus:ring-accent-orange">
-              <button class="bg-accent-orange hover:bg-accent-orange-dark text-black px-4 py-2 rounded-lg transition-colors font-medium">
-                Save
-              </button>
-            </div>
-          </div>
-
-          <div>
-            <label class="block text-text-primary mb-2">Endpoint URL</label>
-            <input type="text" 
-                   v-model="endpointUrl" 
-                   class="w-full bg-elevation-3 border border-border-weak rounded-lg px-4 py-2 text-text-primary placeholder:text-text-secondary focus:border-accent-orange focus:ring-1 focus:ring-accent-orange">
+      <template v-for="api in apiServices" :key="api.id">
+        <div v-if="selectedApis.includes(api.id)"
+             class="bg-elevation-2 rounded-lg p-6 border border-border-weak">
+          <h2 class="text-xl font-semibold mb-4 text-text-primary">{{ api.name }} Configuration</h2>
+          <div class="space-y-4">
+            <component :is="api.configComponent" 
+                      v-model="settings[api.id]"
+                      @update:modelValue="updateApiConfig(api.id, $event)" />
           </div>
         </div>
-      </div>
+      </template>
 
       <!-- Danger Zone -->
       <div class="bg-elevation-2 rounded-lg p-6 border border-error-text border-opacity-20">
@@ -61,10 +66,85 @@
 </template>
 
 <script>
+import {
+  CloudIcon,
+  CommandLineIcon,
+  CpuChipIcon,
+  ServerIcon,
+  SparklesIcon,
+  UserGroupIcon
+} from '@heroicons/vue/24/outline'
+
+import WeaviateConfig from '../components/settings/WeaviateConfig.vue'
+import OllamaConfig from '../components/settings/OllamaConfig.vue'
+import OpenAIAgentsConfig from '../components/settings/OpenAIAgentsConfig.vue'
+import OpenAICustomConfig from '../components/settings/OpenAICustomConfig.vue'
+import NextcloudConfig from '../components/settings/NextcloudConfig.vue'
+import RedisConfig from '../components/settings/RedisConfig.vue'
+
 export default {
   name: "Settings",
+  components: {
+    WeaviateConfig,
+    OllamaConfig,
+    OpenAIAgentsConfig,
+    OpenAICustomConfig,
+    NextcloudConfig,
+    RedisConfig
+  },
   data() {
     return {
+      selectedApis: [],
+      apiServices: [
+        {
+          id: 'weaviate',
+          name: 'Weaviate',
+          description: 'Vector Database',
+          icon: ServerIcon,
+          configured: false,
+          configComponent: 'WeaviateConfig'
+        },
+        {
+          id: 'ollama',
+          name: 'Ollama',
+          description: 'Local LLM Runtime',
+          icon: CpuChipIcon,
+          configured: false,
+          configComponent: 'OllamaConfig'
+        },
+        {
+          id: 'openai_agents',
+          name: 'OpenAI (Agents)',
+          description: 'Agent LLM Provider',
+          icon: UserGroupIcon,
+          configured: false,
+          configComponent: 'OpenAIAgentsConfig'
+        },
+        {
+          id: 'openai_custom',
+          name: 'OpenAI (Custom GPT)',
+          description: 'Custom GPT Provider',
+          icon: SparklesIcon,
+          configured: false,
+          configComponent: 'OpenAICustomConfig'
+        },
+        {
+          id: 'nextcloud',
+          name: 'Nextcloud',
+          description: 'File Storage',
+          icon: CloudIcon,
+          configured: false,
+          configComponent: 'NextcloudConfig'
+        },
+        {
+          id: 'redis',
+          name: 'Redis',
+          description: 'Cache & Queue',
+          icon: CommandLineIcon,
+          configured: false,
+          configComponent: 'RedisConfig'
+        }
+      ],
       settings: {
         weaviate: {
           host: '',
@@ -131,6 +211,22 @@ export default {
     },
     toggleSection(section) {
       this.isExpanded[section] = !this.isExpanded[section];
+    },
+    selectApi(apiId) {
+      const index = this.selectedApis.indexOf(apiId)
+      if (index === -1) {
+        this.selectedApis.push(apiId)
+      } else {
+        this.selectedApis.splice(index, 1)
+      }
+    },
+    updateApiConfig(apiId, config) {
+      this.settings[apiId] = config
+      this.apiServices.find(api => api.id === apiId).configured = this.isApiConfigured(apiId)
+    },
+    isApiConfigured(apiId) {
+      const config = this.settings[apiId]
+      return config && Object.values(config).every(value => value !== '' && value !== null)
     }
   }
 }
