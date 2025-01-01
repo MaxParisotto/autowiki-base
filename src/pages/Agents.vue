@@ -47,6 +47,26 @@
                   <label>API Key:</label>
                   <input v-model="agent.apiKey" type="password" required>
                 </div>
+                <div class="form-group">
+                  <label>Model:</label>
+                  <select v-model="agent.model" 
+                          class="bg-elevation-3 border border-border-weak rounded-lg px-4 py-2 text-text-primary">
+                    <optgroup label="GPT Models">
+                      <option value="gpt-4">GPT-4</option>
+                      <option value="gpt-4-turbo">GPT-4 Turbo</option>
+                      <option value="gpt-3.5-turbo">GPT-3.5 Turbo</option>
+                    </optgroup>
+                    <optgroup label="Local Models">
+                      <option value="llama2">Llama 2</option>
+                      <option value="mistral">Mistral</option>
+                      <option value="codellama">CodeLlama</option>
+                    </optgroup>
+                    <optgroup label="Specialized Models">
+                      <option value="claude-2">Claude 2</option>
+                      <option value="palm">PaLM</option>
+                    </optgroup>
+                  </select>
+                </div>
               </div>
 
               <!-- Role Definition -->
@@ -243,6 +263,7 @@ export default {
           type: 'assistant',
           endpoint: '',
           apiKey: '',
+          model: 'gpt-4', // Add default model
           active: true,
           role: {
             primary: '',
@@ -296,6 +317,7 @@ export default {
         type: 'assistant',
         endpoint: '',
         apiKey: '',
+        model: 'gpt-4', // Add default model to new agents
         active: true,
         role: {
           primary: '',
