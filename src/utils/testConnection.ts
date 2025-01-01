@@ -1,102 +1,93 @@
-import { mysqlPool, redisClient, initializeConnections } from '../config/database'
+import { mysqlPool, redisClient } from '../config/database'
 import chalk from 'chalk'
-import { fileURLToPath } from 'url'
 
-console.log(chalk.blue('Starting connection tests...'))
+console.log(chalk.blue('Starting database connection tests...\n'))
 
-async function testMySQLConnection() {
-  console.log(chalk.yellow('Testing MySQL connection...'))
+async function testConnections() {
   try {
-    const [result] = await mysqlPool.execute('SELECT 1 as test')
-    console.log(chalk.green('✓ MySQL Connection successful'))
-    console.log(chalk.gray(`  Host: ${process.env.MYSQL_HOST}`))
-    console.log(chalk.gray(`  Database: ${process.env.MYSQL_DATABASE}`))
-    return true
-  } catch (error: any) {
-    console.log(chalk.red('✗ MySQL Connection failed'))
-    console.error(chalk.red(`  Error: ${error.message}`))
-    if (error.code === 'ER_ACCESS_DENIED_ERROR') {
-      console.log(chalk.yellow('  Hint: Check your MySQL username and password'))
-    }
-    return false
-  }
-}
-
-async function testRedisConnection() {
-  console.log(chalk.yellow('\nTesting Redis connection...'))
-  try {
-    // Don't try to connect again if already connected
+    // Test MySQL connection first
+    console.log(chalk.yellow('Testing MySQL connection...'))
+    const mysqlStartTime = Date.now()
+    const [tables] = await mysqlPool.query('SHOW TABLES')
+    const mysqlLatency = Date.now() - mysqlStartTime
+    
+    // Test Redis connection
+    console.log(chalk.yellow('Testing Redis connection...'))
+    const redisStartTime = Date.now()
+    
+    // Ensure Redis client is connected
     if (!redisClient.isOpen) {
       await redisClient.connect()
     }
+    
     const pong = await redisClient.ping()
-    console.log(chalk.green('✓ Redis Connection successful'))
+    const redisLatency = Date.now() - redisStartTime
+
+    // Display results
+    console.log(chalk.blue('\nConnection Status:'))
+    console.log(chalk.green('✓ MySQL Connected'))
+    console.log(chalk.gray(`  Host: ${process.env.MYSQL_HOST}`))
+    console.log(chalk.gray(`  Database: ${process.env.MYSQL_DATABASE}`))
+    console.log(chalk.gray(`  Tables: ${(tables as any[]).length}`))
+    console.log(chalk.gray(`  Latency: ${mysqlLatency}ms`))
+    
+    console.log(chalk.green('\n✓ Redis Connected'))
     console.log(chalk.gray(`  Host: ${process.env.REDIS_HOST}`))
+    console.log(chalk.gray(`  Port: ${process.env.REDIS_PORT}`))
     console.log(chalk.gray(`  Response: ${pong}`))
+    console.log(chalk.gray(`  Latency: ${redisLatency}ms`))
+
+    // Perform cleanup
+    try {
+      await redisClient.quit()
+      await mysqlPool.end()
+    } catch (cleanupError) {
+      console.warn(chalk.yellow('Warning during cleanup:', cleanupError))
+    }
+
     return true
   } catch (error: any) {
-    console.log(chalk.red('✗ Redis Connection failed'))
-    console.error(chalk.red(`  Error: ${error.message}`))
-    if (error.code === 'ECONNREFUSED') {
-      console.log(chalk.yellow('\n  Troubleshooting Redis:'))
-      console.log(chalk.gray('  1. Is Redis server installed and running?'))
-      console.log(chalk.gray('  2. Install Redis:'))
-      console.log(chalk.gray('     - Mac: brew install redis && brew services start redis'))
-      console.log(chalk.gray('     - Linux: sudo apt install redis-server'))
-      console.log(chalk.gray('     - Windows: Download from https://redis.io/download'))
-      console.log(chalk.gray('  3. Check if Redis is running:'))
-      console.log(chalk.gray('     - Mac/Linux: redis-cli ping'))
-      console.log(chalk.gray('     - Windows: redis-cli.exe ping'))
+    console.error(chalk.red('\nConnection failed:'))
+    console.error(chalk.red(`Error: ${error.message}`))
+    
+    // Attempt cleanup even on error
+    try {
+      if (redisClient.isOpen) {
+        await redisClient.quit()
+      }
+      await mysqlPool.end()
+    } catch (cleanupError) {
+      console.warn(chalk.yellow('Warning during cleanup:', cleanupError))
     }
+    
     return false
   }
 }
 
-async function runConnectionTests() {
-  console.log(chalk.blue('\nTesting Database Connections...\n'))
-  
+// Run test with proper process handling
+process.on('SIGTERM', async () => {
+  console.log(chalk.yellow('\nReceived SIGTERM. Cleaning up...'))
   try {
-    await initializeConnections()
-    
-    const mysqlSuccess = await testMySQLConnection()
-    const redisSuccess = await testRedisConnection()
-
-    console.log('\n' + chalk.blue('Test Summary:'))
-    console.log(mysqlSuccess ? chalk.green('MySQL: OK') : chalk.red('MySQL: Failed'))
-    console.log(redisSuccess ? chalk.green('Redis: OK') : chalk.red('Redis: Failed'))
-    
-    if (!mysqlSuccess || !redisSuccess) {
-      console.log(chalk.yellow('\nTroubleshooting tips:'))
-      console.log(chalk.gray('1. Check if your .env file exists and has correct credentials'))
-      console.log(chalk.gray('2. Verify that MySQL and Redis servers are running'))
-      console.log(chalk.gray('3. Check firewall settings and port availability'))
-    }
-
-    // Cleanup
     if (redisClient.isOpen) {
       await redisClient.quit()
     }
     await mysqlPool.end()
-
-    // Exit with appropriate code
-    process.exit(mysqlSuccess && redisSuccess ? 0 : 1)
-  } catch (error: any) {
-    console.error(chalk.red('\nConnection initialization failed:'))
-    console.error(chalk.red(error.message))
-    process.exit(1)
+  } catch (error) {
+    console.error('Error during cleanup:', error)
   }
-}
-
-// Ensure we catch any unhandled promise rejections
-process.on('unhandledRejection', (error: any) => {
-  console.error(chalk.red('Unhandled rejection:'), error.message)
-  process.exit(1)
+  process.exit(0)
 })
 
-// Run immediately
-runConnectionTests().catch(error => {
-  console.error(chalk.red('Fatal error:'), error)
-  process.exit(1)
-})
-
-export { runConnectionTests, testMySQLConnection, testRedisConnection }
+testConnections()
+  .then(success => {
+    if (success) {
+      console.log(chalk.green('\nAll connection tests passed successfully'))
+    } else {
+      console.log(chalk.red('\nSome connection tests failed'))
+      process.exit(1)
+    }
+  })
+  .catch(error => {
+    console.error(chalk.red('\nTest failed with error:'), error)
+    process.exit(1)
+  })
