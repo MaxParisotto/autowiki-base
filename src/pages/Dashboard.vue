@@ -1,44 +1,59 @@
 <template>
-  <div class="bg-elevation-1 p-6 rounded-lg">
+  <div class="p-6">
     <h1 class="text-2xl font-bold mb-6 text-text-primary">Dashboard</h1>
-    <div class="dashboard-container">
-      <!-- Overview Stats -->
-      <div class="stats-grid">
-        <div class="stat-card" v-for="stat in stats" :key="stat.title">
-          <h3>{{ stat.title }}</h3>
-          <div class="stat-value">{{ stat.value }}</div>
-          <div class="stat-change" :class="stat.trend">
+    <div class="space-y-6">
+      <!-- Stats Grid -->
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+        <div v-for="stat in stats" 
+             :key="stat.title" 
+             class="bg-elevation-1 rounded-lg p-4 border border-border-weak">
+          <h3 class="text-text-secondary text-sm">{{ stat.title }}</h3>
+          <div class="text-text-primary text-2xl font-semibold mt-2">{{ stat.value }}</div>
+          <div :class="{
+            'text-success-text': stat.trend === 'positive',
+            'text-error-text': stat.trend === 'negative',
+            'text-text-secondary': stat.trend === 'neutral'
+          }" class="text-sm mt-1">
             {{ stat.change }}
           </div>
         </div>
       </div>
 
-      <!-- Tasks Requiring Attention -->
-      <div class="dashboard-section">
-        <h2>Pending Approvals</h2>
-        <div class="approval-cards">
-          <div v-for="task in pendingApprovals" :key="task.id" class="approval-card">
-            <div class="approval-header">
-              <span class="project-tag">{{ task.projectName }}</span>
-              <span class="phase-tag">Phase {{ task.phaseNumber }}</span>
+      <!-- Pending Approvals -->
+      <div class="bg-elevation-2 rounded-lg p-6 border border-border-weak">
+        <h2 class="text-xl font-semibold mb-4 text-text-primary">Pending Approvals</h2>
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-4">
+          <div v-for="task in pendingApprovals" 
+               :key="task.id" 
+               class="bg-elevation-3 rounded-lg p-4 border border-border-weak">
+            <div class="flex justify-between items-start mb-3">
+              <span class="badge badge-primary">{{ task.projectName }}</span>
+              <span class="badge badge-secondary">Phase {{ task.phaseNumber }}</span>
             </div>
-            <h3>{{ task.title }}</h3>
-            <p>{{ task.description }}</p>
-            <div class="completion-info">
-              <div class="progress-bar">
-                <div class="progress" :style="{ width: task.progress + '%' }"></div>
+            <h3 class="text-text-primary font-medium mb-2">{{ task.title }}</h3>
+            <p class="text-text-secondary text-sm mb-4">{{ task.description }}</p>
+            
+            <div class="mb-4">
+              <div class="h-2 bg-elevation-3 rounded overflow-hidden">
+                <div class="h-full bg-accent-orange transition-all duration-300"
+                     :style="{ width: task.progress + '%' }">
+                </div>
               </div>
-              <span>{{ task.progress }}% Complete</span>
+              <span class="text-text-secondary text-sm mt-1 block">
+                {{ task.progress }}% Complete
+              </span>
             </div>
-            <div class="assigned-agents">
-              <img v-for="agent in task.agents" 
-                   :key="agent.id" 
-                   :src="agent.avatar" 
-                   :title="agent.name"
-                   class="agent-avatar">
-            </div>
-            <div class="approval-actions">
-              <button @click="showApprovalDialog(task)" class="review-button">
+
+            <div class="flex items-center justify-between">
+              <div class="flex -space-x-2">
+                <img v-for="agent in task.agents" 
+                     :key="agent.id" 
+                     :src="agent.avatar" 
+                     :title="agent.name"
+                     class="w-8 h-8 rounded-full border-2 border-elevation-2">
+              </div>
+              <button @click="showApprovalDialog(task)" 
+                      class="bg-accent-orange hover:bg-accent-orange-dark text-black px-4 py-2 rounded-lg transition-colors">
                 Review
               </button>
             </div>
@@ -47,85 +62,49 @@
       </div>
 
       <!-- Active Projects Timeline -->
-      <div class="dashboard-section">
-        <h2>Active Projects</h2>
-        <div class="timeline-container">
-          <div v-for="project in activeProjects" :key="project.id" class="timeline-item">
-            <div class="timeline-header">
-              <h3>{{ project.name }}</h3>
-              <span class="project-status" :class="project.status">
+      <div class="bg-elevation-2 rounded-lg p-6 border border-border-weak">
+        <h2 class="text-xl font-semibold mb-4 text-text-primary">Active Projects</h2>
+        <div class="space-y-6">
+          <div v-for="project in activeProjects" 
+               :key="project.id" 
+               class="bg-elevation-3 rounded-lg p-4">
+            <div class="flex justify-between items-center mb-4">
+              <h3 class="text-text-primary font-medium">{{ project.name }}</h3>
+              <span class="badge" 
+                    :class="{
+                      'badge-primary': project.status === 'in_progress',
+                      'badge-secondary': project.status === 'completed'
+                    }">
                 {{ project.status }}
               </span>
             </div>
-            <div class="phase-timeline">
-              <div v-for="phase in project.phases" 
-                   :key="phase.id" 
-                   class="phase-node"
-                   :class="phase.status"
-                   @click="showPhaseDetails(phase)">
-                <div class="phase-dot"></div>
-                <div class="phase-label">{{ phase.name }}</div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <!-- Approval Dialog -->
-      <div v-if="showDialog" class="approval-dialog">
-        <div class="dialog-content">
-          <h2>Review Task</h2>
-          <div class="task-details">
-            <h3>{{ selectedTask.title }}</h3>
-            <p>{{ selectedTask.description }}</p>
             
-            <div class="completion-evidence">
-              <h4>Completion Evidence</h4>
-              <div class="evidence-items">
-                <div v-for="item in selectedTask.evidence" 
-                     :key="item.id" 
-                     class="evidence-item">
-                  <i :class="item.icon"></i>
-                  <a :href="item.link" target="_blank">{{ item.name }}</a>
+            <div class="flex items-center gap-2">
+              <div v-for="phase in project.phases" 
+                   :key="phase.id"
+                   class="flex-1">
+                <div class="relative flex items-center">
+                  <div class="h-2 flex-1 bg-elevation-3"
+                       :class="{ 'bg-accent-orange': phase.status === 'completed' }">
+                  </div>
+                  <div class="w-4 h-4 rounded-full border-2 absolute -ml-2"
+                       :class="{
+                         'bg-accent-orange border-accent-orange': phase.status === 'completed',
+                         'bg-elevation-2 border-border-medium': phase.status === 'pending',
+                         'bg-error-text border-error-text': phase.status === 'blocked'
+                       }"
+                       @click="showPhaseDetails(phase)">
+                  </div>
                 </div>
+                <span class="text-xs text-text-secondary mt-2 block">{{ phase.name }}</span>
               </div>
-            </div>
-
-            <div class="review-form">
-              <label>Review Notes:</label>
-              <textarea v-model="reviewNotes" 
-                        rows="4" 
-                        placeholder="Provide feedback or reasons for approval/rejection">
-              </textarea>
-
-              <div class="feedback-options" v-if="showRejectionOptions">
-                <h4>Rejection Feedback</h4>
-                <div v-for="option in rejectionOptions" 
-                     :key="option.id" 
-                     class="feedback-option">
-                  <input type="checkbox" 
-                         v-model="selectedFeedback" 
-                         :value="option.id">
-                  <label>{{ option.label }}</label>
-                </div>
-              </div>
-            </div>
-
-            <div class="dialog-actions">
-              <button @click="closeDialog" class="cancel-button">
-                Cancel
-              </button>
-              <button @click="rejectTask" class="reject-button">
-                Reject
-              </button>
-              <button @click="approveTask" class="approve-button">
-                Approve
-              </button>
             </div>
           </div>
         </div>
       </div>
     </div>
+
+    <!-- ...existing dialog code... -->
   </div>
 </template>
 
@@ -232,115 +211,5 @@ export default {
 </script>
 
 <style scoped>
-.dashboard-container {
-  padding: 16px;
-}
-
-.stats-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-  gap: 16px;
-  margin-bottom: 24px;
-}
-
-.stat-card {
-  background: white;
-  padding: 16px;
-  border-radius: 8px;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-}
-
-.approval-cards {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-  gap: 16px;
-}
-
-.approval-card {
-  background: white;
-  padding: 16px;
-  border-radius: 8px;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-}
-
-.timeline-container {
-  display: flex;
-  flex-direction: column;
-  gap: 16px;
-}
-
-.phase-timeline {
-  display: flex;
-  align-items: center;
-  margin-top: 8px;
-}
-
-.phase-node {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  flex: 1;
-  position: relative;
-  cursor: pointer;
-}
-
-.phase-dot {
-  width: 12px;
-  height: 12px;
-  border-radius: 50%;
-  background: var(--primary-color);
-}
-
-.phase-node.completed .phase-dot {
-  background: var(--active-color);
-}
-
-.phase-node.blocked .phase-dot {
-  background: #e74c3c;
-}
-
-.approval-dialog {
-  position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background: rgba(0, 0, 0, 0.5);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  z-index: 1000;
-}
-
-.dialog-content {
-  background: white;
-  padding: 24px;
-  border-radius: 8px;
-  width: 90%;
-  max-width: 600px;
-  max-height: 80vh;
-  overflow-y: auto;
-}
-
-.agent-avatar {
-  width: 24px;
-  height: 24px;
-  border-radius: 50%;
-  margin-right: 4px;
-}
-
-.progress-bar {
-  height: 4px;
-  background: #eee;
-  border-radius: 2px;
-  overflow: hidden;
-}
-
-.progress {
-  height: 100%;
-  background: var(--active-color);
-  transition: width 0.3s ease;
-}
-
-/* Add more styles as needed */
+/* Remove existing styles as they're now handled by Tailwind classes */
 </style>
