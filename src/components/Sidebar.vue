@@ -1,3 +1,15 @@
+<script setup>
+import { computed } from 'vue'
+import { useRoute } from 'vue-router'
+
+const route = useRoute()
+const currentPath = computed(() => route.path)
+
+const navItems = [
+  // Add any remaining navigation items here
+]
+</script>
+
 <template>
   <nav class="sidebar">
     <router-link 
@@ -12,26 +24,6 @@
     </router-link>
   </nav>
 </template>
-
-<script>
-export default {
-  name: 'Sidebar',
-  data() {
-    return {
-      navItems: [
-        { path: '/weaviate', label: 'Weaviate', icon: 'IconWeaviate' },
-        { path: '/settings', label: 'Settings', icon: 'IconSettings' },
-        // ... other navigation items
-      ]
-    }
-  },
-  computed: {
-    currentPath() {
-      return this.$route.path
-    }
-  }
-}
-</script>
 
 <style scoped>
 .sidebar-item {

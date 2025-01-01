@@ -19,12 +19,6 @@ const routes = [
     component: () => import("./pages/Tasks.vue"),
   },
   {
-    path: "/settings",
-    name: "Settings",
-    component: () => import("./pages/Settings.vue"),
-    meta: { title: "Settings" }
-  },
-  {
     path: "/agents",
     name: "Agents",
     component: () => import("./pages/Agents.vue"),

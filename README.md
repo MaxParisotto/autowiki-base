@@ -33,21 +33,21 @@ cd [project-name]
 2 Install dependencies
 
 ```bash
-pnpm install
+npm install
 
 ```
 
 3 Run development server
 
 ```bash
-pnpm run dev
+npm run dev
 
 ```
 
 ## Building for Production
 
 ```bash
-pnpm run build
+npm run build
 
 ```
 

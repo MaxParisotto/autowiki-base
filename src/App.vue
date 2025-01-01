@@ -299,15 +299,6 @@ tr:nth-child(even) {
   color: var(--text-primary);
 }
 
-.nav-link {
-  @apply flex items-center px-4 py-2 text-text-secondary rounded-lg;
-  /* Remove hover effects and transitions */
-}
-
-.router-link-active {
-  @apply bg-accent-orange text-black font-semibold;
-}
-
 /* Add these tooltip styles */
 .tooltip-trigger {
   position: relative;
