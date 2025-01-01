@@ -1,31 +1,40 @@
 <template>
     <div class="openai-agents-config">
         <h2>OpenAI Agents Configuration</h2>
-        <v-form @submit.prevent="saveConfig">
-            <v-container>
-                <v-row>
-                    <v-col cols="12">
-                        <v-text-field
-                            v-model="apiKey"
-                            label="OpenAI API Key"
-                            :type="showApiKey ? 'text' : 'password'"
-                            :append-icon="showApiKey ? 'mdi-eye-off' : 'mdi-eye'"
-                            @click:append="showApiKey = !showApiKey"
-                        />
-                    </v-col>
-                    <v-col cols="12">
-                        <v-select
-                            v-model="selectedModel"
-                            :items="availableModels"
-                            label="Default Model"
-                        />
-                    </v-col>
-                    <v-col cols="12">
-                        <v-btn color="primary" type="submit">Save Configuration</v-btn>
-                    </v-col>
-                </v-row>
-            </v-container>
-        </v-form>
+        <form @submit.prevent="saveConfig" class="config-form">
+            <div class="form-grid">
+                <div class="form-group">
+                    <label>OpenAI API Key</label>
+                    <input 
+                        v-model="apiKey"
+                        :type="showApiKey ? 'text' : 'password'"
+                        class="form-input"
+                    />
+                    <button 
+                        type="button" 
+                        @click="showApiKey = !showApiKey"
+                        class="toggle-visibility"
+                    >
+                        {{ showApiKey ? 'Hide' : 'Show' }}
+                    </button>
+                </div>
+                <div class="form-group">
+                    <label>Default Model</label>
+                    <select v-model="selectedModel" class="form-select">
+                        <option v-for="model in availableModels" 
+                                :key="model" 
+                                :value="model">
+                            {{ model }}
+                        </option>
+                    </select>
+                </div>
+                <div class="form-actions">
+                    <button type="submit" class="btn-primary">
+                        Save Configuration
+                    </button>
+                </div>
+            </div>
+        </form>
     </div>
 </template>
 
@@ -79,5 +88,23 @@ export default {
     max-width: 800px;
     margin: 0 auto;
     padding: 20px;
+}
+
+.form-grid {
+    display: grid;
+    gap: 1.5rem;
+}
+
+.form-group {
+    display: grid;
+    gap: 0.5rem;
+}
+
+.form-input, .form-select {
+    @apply bg-elevation-1 border border-border-weak rounded-lg px-4 py-2;
+}
+
+.btn-primary {
+    @apply bg-accent-orange hover:bg-accent-orange-dark text-black px-4 py-2 rounded-lg transition-colors;
 }
 </style>

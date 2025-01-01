@@ -1,14 +1,11 @@
+
 import { createRouter, createWebHistory } from 'vue-router'
-import Dashboard from '@/pages/Dashboard.vue'
-import Weaviate from '@/pages/Weaviate.vue'
-import Settings from '@/pages/Settings.vue'
+// ...existing imports...
+import Weaviate from '../pages/Weaviate.vue'
+import Settings from '../pages/Settings.vue'
 
 const routes = [
-  {
-    path: '/',
-    name: 'Dashboard',
-    component: Dashboard
-  },
+  // ...existing routes...
   {
     path: '/weaviate',
     name: 'Weaviate',
@@ -17,12 +14,21 @@ const routes = [
   {
     path: '/settings',
     name: 'Settings',
-    component: Settings
+    component: Settings,
+    children: [
+      {
+        path: 'agents',
+        name: 'OpenAIAgentsConfig',
+        component: () => import('../components/settings/OpenAIAgentsConfig.vue')
+      }
+      // Add more settings routes as needed
+    ]
   }
 ]
 
+// ...existing router creation and export...
 const router = createRouter({
-  history: createWebHistory(),
+  history: createWebHistory(process.env.BASE_URL),
   routes
 })
 

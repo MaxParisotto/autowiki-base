@@ -1,4 +1,36 @@
 <template>
+<template>
+  <div class="settings-layout p-6">
+    <h1 class="text-2xl font-bold mb-6 text-text-primary">Settings</h1>
+    
+    <div class="grid grid-cols-12 gap-6">
+      <!-- Settings Navigation -->
+      <div class="col-span-3">
+        <nav class="space-y-2">
+          <router-link 
+            to="/settings/agents"
+            class="block p-3 rounded-lg hover:bg-elevation-2-hover transition-colors"
+            active-class="bg-elevation-2 text-accent-orange"
+          >
+            OpenAI Agents
+          </router-link>
+          <!-- Add more settings navigation items as needed -->
+        </nav>
+      </div>
+
+      <!-- Settings Content -->
+      <div class="col-span-9">
+        <router-view></router-view>
+      </div>
+    </div>
+  </div>
+</template>
+
+<script>
+export default {
+  name: 'Settings'
+}
+</script>
   <div class="p-6">
     <h1 class="text-2xl font-bold mb-6 text-text-primary">Settings</h1>
     <div class="space-y-6">
