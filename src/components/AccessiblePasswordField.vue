@@ -1,26 +1,38 @@
 <template>
-  <div class="password-field-group">
-    <input
-      :id="`${id}-username`"
-      type="hidden"
-      autocomplete="username"
-      :value="usernameValue"
-      aria-hidden="true"
-    >
-    <label :for="id">{{ label }}</label>
-    <input
-      :id="id"
-      :value="modelValue"
-      @input="$emit('update:modelValue', ($event.target as HTMLInputElement).value)"
-      type="password"
-      :autocomplete="autocomplete"
-      :placeholder="placeholder"
-      :aria-describedby="describedby"
-    >
-  </div>
+  <PasswordFormWrapper :form-id="`${id}-form`">
+    <div class="password-field-group" role="group">
+      <div class="username-field" aria-hidden="true">
+        <input
+          :id="`${id}-username`"
+          type="text"
+          :name="`${id}-username`"
+          autocomplete="username"
+          :value="usernameValue"
+          form="password-form"
+          tabindex="-1"
+          style="position: absolute; opacity: 0; pointer-events: none;"
+        >
+      </div>
+      <label :for="id">{{ label }}</label>
+      <input
+        :id="id"
+        :name="id"
+        :value="modelValue"
+        @input="$emit('update:modelValue', ($event.target as HTMLInputElement).value)"
+        type="password"
+        :autocomplete="autocomplete || 'current-password'"
+        :placeholder="placeholder"
+        :aria-describedby="describedby"
+        form="password-form"
+        required
+      >
+    </div>
+  </PasswordFormWrapper>
 </template>
 
 <script setup lang="ts">
+import PasswordFormWrapper from './PasswordFormWrapper.vue';
+
 defineProps<{
   id: string;
   label: string;

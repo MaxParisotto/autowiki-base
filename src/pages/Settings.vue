@@ -8,8 +8,8 @@
       {{ error }}
     </div>
     <div class="settings-content">
-      <!-- Database Connection Form -->
-      <div class="settings-section connection-status">
+      <!-- Database Connection Section -->
+      <FormSection label="Database Status" className="connection-status">
         <h2>Database Connection Status</h2>
         <div class="status-grid">
           <div class="status-item">
@@ -40,247 +40,268 @@
         >
           {{ isTesting ? 'Testing...' : 'Test Connections' }}
         </button>
+      </FormSection>
+
+      <!-- Settings Forms Container -->
+      <div class="settings-forms-container">
+        <!-- Hidden form for password fields -->
+        <form id="password-form" style="display: none" @submit.prevent></form>
+        
+        <!-- Auth Settings -->
+        <FormSection label="Authentication Settings">
+          <form 
+            @submit.prevent="saveAuthSettings" 
+            class="settings-form"
+            id="auth-settings-form"
+          >
+            <div class="settings-section" role="group" aria-labelledby="auth-heading">
+              <h2 id="auth-heading">API Keys & Authentication</h2>
+              <!-- OpenAI Settings -->
+              <div class="form-group" role="group">
+                <PasswordField
+                  id="openai-api"
+                  label="OpenAI API Key"
+                  v-model="settings.openai.apiKey"
+                  username-value="openai-user"
+                  placeholder="Enter OpenAI API key"
+                  describedby="auth-heading"
+                />
+                <label for="openai-model">Model</label>
+                <input 
+                  id="openai-model" 
+                  v-model="settings.openai.model" 
+                  type="text" 
+                  placeholder="e.g., gpt-4"
+                >
+              </div>
+              <!-- Custom GPT Settings -->
+              <div class="form-group" role="group">
+                <label for="custom-gpt-url">URL</label>
+                <input 
+                  id="custom-gpt-url" 
+                  v-model="settings.customGpt.url" 
+                  type="url" 
+                  placeholder="Enter Custom GPT URL"
+                >
+                <PasswordField
+                  id="custom-gpt-key"
+                  label="Custom GPT API Key"
+                  v-model="settings.customGpt.apiKey"
+                  username-value="custom-gpt"
+                  placeholder="Enter Custom GPT API key"
+                  describedby="auth-heading"
+                />
+              </div>
+              <button type="submit" class="save-button">Save Auth Settings</button>
+            </div>
+          </form>
+        </FormSection>
+
+        <!-- Connection Settings -->
+        <FormSection label="Connection Settings">
+          <form 
+            @submit.prevent="saveConnectionSettings" 
+            class="settings-form"
+            id="connection-settings-form"
+          >
+            <div class="settings-section" role="group" aria-labelledby="connection-heading">
+              <h2 id="connection-heading">Connection Settings</h2>
+              <!-- Ollama Settings -->
+              <div class="form-group" role="group">
+                <label for="ollama-url">URL</label>
+                <input 
+                  id="ollama-url" 
+                  v-model="settings.ollama.url" 
+                  type="url" 
+                  placeholder="Enter Ollama URL"
+                >
+              </div>
+              <!-- Redis Settings -->
+              <div class="form-group" role="group">
+                <label for="redis-url">URL</label>
+                <input 
+                  id="redis-url" 
+                  v-model="settings.redis.url" 
+                  type="url" 
+                  placeholder="Enter Redis URL"
+                >
+                <PasswordField
+                  id="redis-password"
+                  label="Password"
+                  v-model="settings.redis.password"
+                  username-value="redis"
+                  placeholder="Enter Redis password"
+                  describedby="auth-heading"
+                />
+              </div>
+              <!-- Nextcloud Settings -->
+              <div class="form-group" role="group">
+                <label for="nextcloud-url">URL</label>
+                <input 
+                  id="nextcloud-url" 
+                  v-model="settings.nextcloud.url" 
+                  type="url" 
+                  placeholder="Enter Nextcloud URL"
+                >
+                <label for="nextcloud-username">Username</label>
+                <input 
+                  id="nextcloud-username" 
+                  v-model="settings.nextcloud.username" 
+                  type="text" 
+                  autocomplete="username"
+                  placeholder="Enter Nextcloud username"
+                >
+                <PasswordField
+                  id="nextcloud-password"
+                  label="Password"
+                  v-model="settings.nextcloud.password"
+                  username-value="nextcloud"
+                  placeholder="Enter Nextcloud password"
+                  describedby="auth-heading"
+                />
+              </div>
+              <button type="submit" class="save-button">Save Connection Settings</button>
+            </div>
+          </form>
+        </FormSection>
+
+        <!-- RAG Settings -->
+        <FormSection label="RAG Settings">
+          <form 
+            @submit.prevent="saveRagSettings" 
+            class="settings-form"
+            id="rag-settings-form"
+          >
+            <div class="settings-section" role="group" aria-labelledby="rag-heading">
+              <h2 id="rag-heading">RAG Configuration</h2>
+              <!-- Embedding Settings -->
+              <div class="form-group" role="group">
+                <label for="embedding-model">Embedding Model</label>
+                <select 
+                  id="embedding-model" 
+                  v-model="settings.rag.embeddingModel"
+                  class="select-input"
+                >
+                  <option value="text-embedding-3-small">text-embedding-3-small</option>
+                  <option value="text-embedding-3-large">text-embedding-3-large</option>
+                  <option value="text-embedding-ada-002">text-embedding-ada-002</option>
+                </select>
+              </div>
+
+              <!-- Vector Store Settings -->
+              <div class="form-group" role="group">
+                <h3>Vector Store</h3>
+                <label for="vector-store">Type</label>
+                <select 
+                  id="vector-store" 
+                  v-model="settings.rag.vectorStore.type"
+                  class="select-input"
+                >
+                  <option value="weaviate">Weaviate</option>
+                  <option value="qdrant">Qdrant</option>
+                  <option value="pinecone">Pinecone</option>
+                </select>
+
+                <label for="vector-store-url">URL</label>
+                <input 
+                  id="vector-store-url" 
+                  v-model="settings.rag.vectorStore.url" 
+                  type="url" 
+                  placeholder="Vector store URL"
+                >
+                <PasswordField
+                  id="vector-store-api-key"
+                  label="API Key"
+                  v-model="settings.rag.vectorStore.apiKey"
+                  username-value="vector-store"
+                  placeholder="Vector store API key"
+                  describedby="auth-heading"
+                />
+              </div>
+
+              <!-- Retrieval Settings -->
+              <div class="form-group" role="group">
+                <h3>Retrieval Parameters</h3>
+                <label for="top-k">Top K Results</label>
+                <input 
+                  id="top-k" 
+                  v-model="settings.rag.retrieval.topK" 
+                  type="number" 
+                  min="1" 
+                  max="20"
+                >
+
+                <label for="similarity-threshold">Similarity Threshold</label>
+                <input 
+                  id="similarity-threshold" 
+                  v-model="settings.rag.retrieval.similarityThreshold" 
+                  type="number" 
+                  step="0.01" 
+                  min="0" 
+                  max="1"
+                >
+
+                <label for="mmr-lambda">MMR Lambda</label>
+                <input 
+                  id="mmr-lambda" 
+                  v-model="settings.rag.retrieval.mmrLambda" 
+                  type="number" 
+                  step="0.1" 
+                  min="0" 
+                  max="1"
+                >
+              </div>
+
+              <!-- Text Chunking Settings -->
+              <div class="form-group" role="group">
+                <h3>Text Chunking</h3>
+                <label for="chunk-size">Chunk Size</label>
+                <input 
+                  id="chunk-size" 
+                  v-model="settings.rag.chunking.chunkSize" 
+                  type="number" 
+                  min="100" 
+                  max="2000"
+                >
+
+                <label for="chunk-overlap">Chunk Overlap</label>
+                <input 
+                  id="chunk-overlap" 
+                  v-model="settings.rag.chunking.chunkOverlap" 
+                  type="number" 
+                  min="0" 
+                  max="500"
+                >
+
+                <label for="chunk-strategy">Chunking Strategy</label>
+                <select 
+                  id="chunk-strategy" 
+                  v-model="settings.rag.chunking.strategy"
+                  class="select-input"
+                >
+                  <option value="fixed">Fixed Size</option>
+                  <option value="paragraph">Paragraph</option>
+                  <option value="sentence">Sentence</option>
+                </select>
+              </div>
+              <button type="submit" class="save-button">Save RAG Settings</button>
+            </div>
+          </form>
+        </FormSection>
       </div>
-
-      <!-- Auth Settings Form -->
-      <form @submit.prevent="saveAuthSettings" class="settings-form" aria-label="Authentication Settings">
-        <div class="settings-section">
-          <h2 id="auth-heading">API Keys & Authentication</h2>
-          <!-- OpenAI Settings -->
-          <div class="form-group">
-            <AccessiblePasswordField
-              id="openai-api"
-              label="OpenAI API Key"
-              v-model="settings.openai.apiKey"
-              username-value="openai"
-              placeholder="Enter OpenAI API key"
-              describedby="auth-heading"
-              autocomplete="current-password"
-            />
-            <label for="openai-model">Model</label>
-            <input 
-              id="openai-model" 
-              v-model="settings.openai.model" 
-              type="text" 
-              placeholder="e.g., gpt-4"
-            >
-          </div>
-          <!-- Custom GPT Settings -->
-          <div class="form-group">
-            <label for="custom-gpt-url">URL</label>
-            <input 
-              id="custom-gpt-url" 
-              v-model="settings.customGpt.url" 
-              type="url" 
-              placeholder="Enter Custom GPT URL"
-            >
-            <AccessiblePasswordField
-              id="custom-gpt-key"
-              label="Custom GPT API Key"
-              v-model="settings.customGpt.apiKey"
-              username-value="custom-gpt"
-              placeholder="Enter Custom GPT API key"
-              describedby="auth-heading"
-              autocomplete="current-password"
-            />
-          </div>
-          <button type="submit" class="save-button">Save Auth Settings</button>
-        </div>
-      </form>
-
-      <!-- Connection Settings Form -->
-      <form @submit.prevent="saveConnectionSettings" class="settings-form" aria-label="Connection Settings">
-        <div class="settings-section">
-          <h2>Connection Settings</h2>
-          <!-- Ollama Settings -->
-          <div class="form-group">
-            <label for="ollama-url">URL</label>
-            <input 
-              id="ollama-url" 
-              v-model="settings.ollama.url" 
-              type="url" 
-              placeholder="Enter Ollama URL"
-            >
-          </div>
-          <!-- Redis Settings -->
-          <div class="form-group">
-            <label for="redis-url">URL</label>
-            <input 
-              id="redis-url" 
-              v-model="settings.redis.url" 
-              type="url" 
-              placeholder="Enter Redis URL"
-            >
-            <AccessiblePasswordField
-              id="redis-password"
-              label="Password"
-              v-model="settings.redis.password"
-              username-value="redis"
-              placeholder="Enter Redis password"
-              describedby="auth-heading"
-              autocomplete="current-password"
-            />
-          </div>
-          <!-- Nextcloud Settings -->
-          <div class="form-group">
-            <label for="nextcloud-url">URL</label>
-            <input 
-              id="nextcloud-url" 
-              v-model="settings.nextcloud.url" 
-              type="url" 
-              placeholder="Enter Nextcloud URL"
-            >
-            <label for="nextcloud-username">Username</label>
-            <input 
-              id="nextcloud-username" 
-              v-model="settings.nextcloud.username" 
-              type="text" 
-              autocomplete="username"
-              placeholder="Enter Nextcloud username"
-            >
-            <AccessiblePasswordField
-              id="nextcloud-password"
-              label="Password"
-              v-model="settings.nextcloud.password"
-              username-value="nextcloud"
-              placeholder="Enter Nextcloud password"
-              describedby="auth-heading"
-              autocomplete="current-password"
-            />
-          </div>
-          <button type="submit" class="save-button">Save Connection Settings</button>
-        </div>
-      </form>
-
-      <!-- RAG Settings Form -->
-      <form @submit.prevent="saveRagSettings" class="settings-form" aria-label="RAG Settings">
-        <div class="settings-section">
-          <h2>RAG Configuration</h2>
-          <!-- Embedding Settings -->
-          <div class="form-group">
-            <label for="embedding-model">Embedding Model</label>
-            <select 
-              id="embedding-model" 
-              v-model="settings.rag.embeddingModel"
-              class="select-input"
-            >
-              <option value="text-embedding-3-small">text-embedding-3-small</option>
-              <option value="text-embedding-3-large">text-embedding-3-large</option>
-              <option value="text-embedding-ada-002">text-embedding-ada-002</option>
-            </select>
-          </div>
-
-          <!-- Vector Store Settings -->
-          <div class="form-group">
-            <h3>Vector Store</h3>
-            <label for="vector-store">Type</label>
-            <select 
-              id="vector-store" 
-              v-model="settings.rag.vectorStore.type"
-              class="select-input"
-            >
-              <option value="weaviate">Weaviate</option>
-              <option value="qdrant">Qdrant</option>
-              <option value="pinecone">Pinecone</option>
-            </select>
-
-            <label for="vector-store-url">URL</label>
-            <input 
-              id="vector-store-url" 
-              v-model="settings.rag.vectorStore.url" 
-              type="url" 
-              placeholder="Vector store URL"
-            >
-            <AccessiblePasswordField
-              id="vector-store-api-key"
-              label="API Key"
-              v-model="settings.rag.vectorStore.apiKey"
-              username-value="vector-store"
-              placeholder="Vector store API key"
-              describedby="auth-heading"
-              autocomplete="current-password"
-            />
-          </div>
-
-          <!-- Retrieval Settings -->
-          <div class="form-group">
-            <h3>Retrieval Parameters</h3>
-            <label for="top-k">Top K Results</label>
-            <input 
-              id="top-k" 
-              v-model="settings.rag.retrieval.topK" 
-              type="number" 
-              min="1" 
-              max="20"
-            >
-
-            <label for="similarity-threshold">Similarity Threshold</label>
-            <input 
-              id="similarity-threshold" 
-              v-model="settings.rag.retrieval.similarityThreshold" 
-              type="number" 
-              step="0.01" 
-              min="0" 
-              max="1"
-            >
-
-            <label for="mmr-lambda">MMR Lambda</label>
-            <input 
-              id="mmr-lambda" 
-              v-model="settings.rag.retrieval.mmrLambda" 
-              type="number" 
-              step="0.1" 
-              min="0" 
-              max="1"
-            >
-          </div>
-
-          <!-- Text Chunking Settings -->
-          <div class="form-group">
-            <h3>Text Chunking</h3>
-            <label for="chunk-size">Chunk Size</label>
-            <input 
-              id="chunk-size" 
-              v-model="settings.rag.chunking.chunkSize" 
-              type="number" 
-              min="100" 
-              max="2000"
-            >
-
-            <label for="chunk-overlap">Chunk Overlap</label>
-            <input 
-              id="chunk-overlap" 
-              v-model="settings.rag.chunking.chunkOverlap" 
-              type="number" 
-              min="0" 
-              max="500"
-            >
-
-            <label for="chunk-strategy">Chunking Strategy</label>
-            <select 
-              id="chunk-strategy" 
-              v-model="settings.rag.chunking.strategy"
-              class="select-input"
-            >
-              <option value="fixed">Fixed Size</option>
-              <option value="paragraph">Paragraph</option>
-              <option value="sentence">Sentence</option>
-            </select>
-          </div>
-          <button type="submit" class="save-button">Save RAG Settings</button>
-        </div>
-      </form>
     </div>
   </div>
 </template>
 
 <script setup lang="ts">
-import { onMounted, ref } from 'vue'
+import { onMounted, ref, provide } from 'vue'
 import { storeToRefs } from 'pinia'
 import { useSettingsStore } from '../stores/settingsStore'
 import { toast } from 'vue-sonner'
 import { testDatabaseConnections } from '../utils/api'
 import AccessiblePasswordField from '../components/AccessiblePasswordField.vue'
+import FormSection from '../components/FormSection.vue'
+import PasswordField from '../components/PasswordField.vue'
 
 const settingsStore = useSettingsStore()
 const { settings, loading, error } = storeToRefs(settingsStore)
@@ -400,6 +421,23 @@ async function testConnections() {
     isTesting.value = false
   }
 }
+
+// Add form context
+provide('form-context', {
+  setFormFields: (fields: { [key: string]: string }) => {
+    // This is a no-op function to satisfy form context requirements
+    return;
+  }
+});
+
+// Add form context provider
+const formContext = {
+  registerForm: (formId: string) => {
+    // This is intentionally empty as it's just for accessibility
+  }
+};
+
+provide('settingsFormContext', formContext);
 </script>
 
 <style scoped>
@@ -577,5 +615,21 @@ input[type="number"] {
 
 .test-button:not(:disabled):hover {
   background-color: var(--color-primary-hover, #45a049);
+}
+
+/* Add form-specific styles */
+.settings-form [role="group"] {
+  margin-bottom: 1rem;
+}
+
+.settings-forms-container {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.settings-form {
+  margin: 0;
+  padding: 0;
 }
 </style>
