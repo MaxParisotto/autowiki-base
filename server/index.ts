@@ -1,13 +1,21 @@
 import express, { Request, Response } from 'express'
 import cors from 'cors'
-import { config } from './config'
+import { config } from './config'  // Remove .js extension
 import mysql from 'mysql2/promise'
 import { createClient } from 'redis'
+import { fileURLToPath } from 'url'
+import { dirname } from 'path'
+
+const __filename = fileURLToPath(import.meta.url)
+const __dirname = dirname(__filename)
 
 const app = express()
 
 // Enable CORS
-app.use(cors())
+app.use(cors({
+  origin: 'http://localhost:5173', // Allow requests from Vite dev server
+  credentials: true
+}))
 app.use(express.json())
 
 // Create MySQL connection pool
