@@ -1,21 +1,34 @@
 <template>
   <section :id="id" class="settings-section-wrapper">
-    <FormSection :label="label">
-      <fieldset class="settings-section" :aria-labelledby="`${id}-heading`">
-        <h2 :id="`${id}-heading`">{{ heading }}</h2>
-        <slot></slot>
-      </fieldset>
-    </FormSection>
+    <FormWrapper :form-id="formId" @submit="$emit('submit')">
+      <FormSection :label="label">
+        <FormGroup :id="id" :heading="heading">
+          <slot></slot>
+        </FormGroup>
+      </FormSection>
+      <div class="form-actions">
+        <button type="submit" class="save-button">
+          Save {{ label }}
+        </button>
+      </div>
+    </FormWrapper>
   </section>
 </template>
 
 <script setup lang="ts">
 import FormSection from './FormSection.vue';
+import FormWrapper from './FormWrapper.vue';
+import FormGroup from './FormGroup.vue';
 
 defineProps<{
   id: string;
+  formId: string;
   label: string;
   heading: string;
+}>();
+
+defineEmits<{
+  (e: 'submit'): void;
 }>();
 </script>
 
