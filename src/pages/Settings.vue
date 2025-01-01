@@ -1,8 +1,48 @@
 <template>
   <div class="settings-container">
     <h1>Settings</h1>
+    <div v-if="loading" class="loading-overlay">
+      Loading...
+    </div>
+    <div v-else-if="error" class="error-message">
+      {{ error }}
+    </div>
     <div class="settings-content">
       <form @submit.prevent="saveSettings" class="settings-form">
+        <!-- Database Connection Status -->
+        <div class="settings-section connection-status">
+          <h2>Database Connection Status</h2>
+          <div class="status-grid">
+            <div class="status-item">
+              <span class="status-label">MySQL</span>
+              <span :class="['status-badge', mysqlStatus.connected ? 'connected' : 'disconnected']">
+                {{ mysqlStatus.message }}
+              </span>
+              <span v-if="mysqlStatus.details" class="status-details">
+                {{ mysqlStatus.details }}
+              </span>
+            </div>
+            
+            <div class="status-item">
+              <span class="status-label">Redis</span>
+              <span :class="['status-badge', redisStatus.connected ? 'connected' : 'disconnected']">
+                {{ redisStatus.message }}
+              </span>
+              <span v-if="redisStatus.details" class="status-details">
+                {{ redisStatus.details }}
+              </span>
+            </div>
+          </div>
+          
+          <button 
+            @click="testConnections" 
+            :disabled="isTesting" 
+            class="test-button"
+          >
+            {{ isTesting ? 'Testing...' : 'Test Connections' }}
+          </button>
+        </div>
+
         <!-- OpenAI Settings -->
         <div class="settings-section">
           <h2>OpenAI Settings</h2>
@@ -233,69 +273,90 @@
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted } from 'vue'
-import { storageService } from '../services/StorageService'
+import { onMounted, ref } from 'vue'
+import { useSettingsStore } from '../stores/settingsStore'
+import { toast } from 'vue-sonner'
+import { mysqlPool, redisClient } from '../config/database'
 
-const settings = ref({
-  openai: {
-    apiKey: '',
-    model: ''
-  },
-  ollama: {
-    url: ''
-  },
-  customGpt: {
-    url: '',
-    apiKey: ''
-  },
-  redis: {
-    url: '',
-    password: ''
-  },
-  nextcloud: {
-    url: '',
-    username: '',
-    password: ''
-  },
-  rag: {
-    embeddingModel: 'text-embedding-3-small',
-    vectorStore: {
-      type: 'weaviate',
-      url: '',
-      apiKey: ''
-    },
-    retrieval: {
-      topK: 4,
-      similarityThreshold: 0.7,
-      mmrLambda: 0.5
-    },
-    chunking: {
-      chunkSize: 500,
-      chunkOverlap: 50,
-      strategy: 'fixed'
-    }
-  }
-})
+const settingsStore = useSettingsStore()
+const { settings, loading, error } = settingsStore
 
-// Load settings on mount
 onMounted(async () => {
   try {
-    const savedSettings = await storageService.getSettings('default')
-    if (savedSettings) {
-      settings.value = savedSettings
-    }
-  } catch (error) {
-    console.error('Error loading settings:', error)
+    await settingsStore.loadSettings()
+  } catch (err) {
+    toast.error('Failed to load settings')
   }
 })
 
 const saveSettings = async () => {
   try {
-    await storageService.saveSettings('default', settings.value)
-    console.log('Settings saved successfully')
-  } catch (error) {
-    console.error('Error saving settings:', error)
+    const success = await settingsStore.saveSettings(settings)
+    if (success) {
+      toast.success('Settings saved successfully')
+    } else {
+      toast.error('Failed to save settings')
+    }
+  } catch (err) {
+    toast.error('Error saving settings')
   }
+}
+
+const isTesting = ref(false)
+const mysqlStatus = ref({
+  connected: false,
+  message: 'Not Tested',
+  details: ''
+})
+const redisStatus = ref({
+  connected: false,
+  message: 'Not Tested',
+  details: ''
+})
+
+async function testConnections() {
+  isTesting.value = true
+  
+  // Test MySQL
+  try {
+    const [result] = await mysqlPool.query('SHOW TABLES')
+    mysqlStatus.value = {
+      connected: true,
+      message: 'Connected',
+      details: `Tables found: ${(result as any[]).length}`
+    }
+  } catch (error: any) {
+    mysqlStatus.value = {
+      connected: false,
+      message: 'Failed',
+      details: error.message
+    }
+  }
+
+  // Test Redis
+  try {
+    if (!redisClient.isOpen) {
+      await redisClient.connect()
+    }
+    const pong = await redisClient.ping()
+    redisStatus.value = {
+      connected: true,
+      message: 'Connected',
+      details: `Response: ${pong}`
+    }
+  } catch (error: any) {
+    redisStatus.value = {
+      connected: false,
+      message: 'Failed',
+      details: error.message
+    }
+  } finally {
+    if (redisClient.isOpen) {
+      await redisClient.quit()
+    }
+  }
+
+  isTesting.value = false
 }
 </script>
 
@@ -384,5 +445,95 @@ input:focus, .select-input:focus {
 
 input[type="number"] {
   width: 100%;
+}
+
+.loading-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  font-size: 1.2rem;
+  z-index: 1000;
+}
+
+.error-message {
+  color: var(--color-error, red);
+  padding: 1rem;
+  margin: 1rem 0;
+  background: var(--color-error-bg, #fff1f0);
+  border: 1px solid var(--color-error-border, #ffa39e);
+  border-radius: 4px;
+}
+
+.connection-status {
+  margin-bottom: 1rem;
+}
+
+.status-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 1rem;
+  margin: 1rem 0;
+}
+
+.status-item {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.status-label {
+  font-weight: 500;
+  color: var(--color-text);
+}
+
+.status-badge {
+  display: inline-block;
+  padding: 0.25rem 0.5rem;
+  border-radius: 3px;
+  font-size: 0.85rem;
+  font-weight: 500;
+}
+
+.status-badge.connected {
+  background-color: #10B981;
+  color: white;
+}
+
+.status-badge.disconnected {
+  background-color: #EF4444;
+  color: white;
+}
+
+.status-details {
+  font-size: 0.85rem;
+  color: var(--color-text);
+  opacity: 0.8;
+}
+
+.test-button {
+  background-color: var(--color-primary);
+  color: white;
+  padding: 0.5rem 1rem;
+  border: none;
+  border-radius: 3px;
+  cursor: pointer;
+  font-size: 0.85rem;
+  margin-top: 1rem;
+}
+
+.test-button:disabled {
+  opacity: 0.7;
+  cursor: not-allowed;
+}
+
+.test-button:not(:disabled):hover {
+  background-color: var(--color-primary-hover, #45a049);
 }
 </style>
