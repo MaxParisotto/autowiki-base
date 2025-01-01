@@ -3,10 +3,6 @@
 @tailwind utilities;
 
 /* Component styles */
-@tailwind components;
-@tailwind utilities;
-
-/* Component styles */
 .card-modern {
   background-color: var(--bg-elevation-1);
   border: 1px solid var(--border-weak);
@@ -25,7 +21,7 @@
 }
 
 .badge-secondary {
-  @apply badge bg-elevation-2 text-text-primary;
+  @apply badge bg-elevation-2 text-text-primary hover:bg-elevation-2-hover;
 }
 
 /* Modern Dropdown */
@@ -68,7 +64,7 @@
 }
 
 .toggle-handle {
-  @apply inline-block h-4 w-4 transform rounded-full bg-white transition-transform;
+  @apply inline-block h-4 w-4 transform rounded-full bg-elevation-1 transition-transform;
 }
 
 /* Modern Tabs */
@@ -93,7 +89,7 @@
 
 /* Modern Skeleton Loading */
 .skeleton {
-  @apply animate-pulse bg-elevation-2 rounded;
+  @apply animate-pulse bg-elevation-1 rounded;
 }
 
 /* Modern Tooltip */
@@ -109,6 +105,7 @@
 }
 
 .has-tooltip::after {
+  @apply bg-elevation-3;
   content: attr(data-tooltip);
   position: absolute;
   bottom: 100%;
@@ -121,7 +118,6 @@
   pointer-events: none;
   transition: opacity 0.2s;
   white-space: nowrap;
-  background-color: var(--bg-elevation-3);
   color: var(--text-primary);
   z-index: 50;
 }

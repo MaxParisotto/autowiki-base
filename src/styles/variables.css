@@ -6,7 +6,7 @@
   
   /* Base colors */
   --black: #000000;
-  --white: #D1D1D1;
+  --white: #E6E6E6;
   
   /* Text colors */
   --text-primary: #E6E6E6;
@@ -40,16 +40,16 @@
   
   /* Additional colors */
   --bg-overlay: rgba(18, 18, 18, 0.8);
-  --bg-elevation-1: #1E1E1E;
-  --bg-elevation-2: #252525;
-  --bg-elevation-3: #2F2F2F;
+  --bg-elevation-1: #1A1A1A;
+  --bg-elevation-2: #242424;
+  --bg-elevation-3: #2E2E2E;
   
   /* Shadow colors */
   --shadow-1: rgba(0, 0, 0, 0.3);
   --shadow-2: rgba(0, 0, 0, 0.5);
   
   /* Input specific colors */
-  --input-bg: var(--bg-secondary);
+  --input-bg: var(--bg-elevation-2);
   --input-border: var(--border-medium);
   --input-text: var(--text-primary);
   --input-placeholder: var(--text-muted);
@@ -73,8 +73,14 @@
   
   /* Component-specific backgrounds */
   --input-bg: var(--elevation-2);
-  --dropdown-bg: var(--elevation-2);
+  --dropdown-bg: var(--bg-elevation-2);
   --modal-bg: var(--elevation-1);
-  --card-bg: var(--elevation-1);
+  --card-bg: var(--bg-elevation-2);
   --hover-bg: var(--elevation-3);
+  --tooltip-bg: var(--bg-elevation-3);
+
+  /* Add new elevation hover states */
+  --bg-elevation-1-hover: #202020;
+  --bg-elevation-2-hover: #2A2A2A;
+  --bg-elevation-3-hover: #383838;
 }

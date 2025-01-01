@@ -6,7 +6,7 @@
       <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
         <div v-for="stat in stats" 
              :key="stat.title" 
-             class="bg-elevation-1 rounded-lg p-4 border border-border-weak">
+             class="bg-elevation-2 hover:bg-elevation-2-hover rounded-lg p-4 border border-border-weak transition-all duration-200">
           <h3 class="text-text-secondary text-sm">{{ stat.title }}</h3>
           <div class="text-text-primary text-2xl font-semibold mt-2">{{ stat.value }}</div>
           <div :class="{
@@ -25,7 +25,7 @@
         <div class="grid grid-cols-1 lg:grid-cols-2 gap-4">
           <div v-for="task in pendingApprovals" 
                :key="task.id" 
-               class="bg-elevation-3 rounded-lg p-4 border border-border-weak">
+               class="bg-elevation-3 hover:bg-elevation-3-hover rounded-lg p-4 border border-border-weak transition-colors duration-200">
             <div class="flex justify-between items-start mb-3">
               <span class="badge badge-primary">{{ task.projectName }}</span>
               <span class="badge badge-secondary">Phase {{ task.phaseNumber }}</span>
@@ -34,12 +34,12 @@
             <p class="text-text-secondary text-sm mb-4">{{ task.description }}</p>
             
             <div class="mb-4">
-              <div class="h-2 bg-elevation-3 rounded overflow-hidden">
+              <div class="h-2 bg-elevation-1 rounded-full overflow-hidden">
                 <div class="h-full bg-accent-orange transition-all duration-300"
                      :style="{ width: task.progress + '%' }">
                 </div>
               </div>
-              <span class="text-text-secondary text-sm mt-1 block">
+              <span class="text-text-secondary text-sm mt-2 block">
                 {{ task.progress }}% Complete
               </span>
             </div>
@@ -50,10 +50,10 @@
                      :key="agent.id" 
                      :src="agent.avatar" 
                      :title="agent.name"
-                     class="w-8 h-8 rounded-full border-2 border-elevation-2">
+                     class="w-8 h-8 rounded-full border-2 border-elevation-3">
               </div>
               <button @click="showApprovalDialog(task)" 
-                      class="bg-accent-orange hover:bg-accent-orange-dark text-black px-4 py-2 rounded-lg transition-colors">
+                      class="bg-accent-orange hover:bg-accent-orange-dark text-black px-4 py-2 rounded-lg transition-colors font-medium">
                 Review
               </button>
             </div>
@@ -67,7 +67,7 @@
         <div class="space-y-6">
           <div v-for="project in activeProjects" 
                :key="project.id" 
-               class="bg-elevation-3 rounded-lg p-4">
+               class="bg-elevation-3 hover:bg-elevation-3-hover rounded-lg p-4 transition-colors duration-200">
             <div class="flex justify-between items-center mb-4">
               <h3 class="text-text-primary font-medium">{{ project.name }}</h3>
               <span class="badge" 
@@ -79,18 +79,21 @@
               </span>
             </div>
             
-            <div class="flex items-center gap-2">
+            <div class="flex items-center gap-4 mt-6">
               <div v-for="phase in project.phases" 
                    :key="phase.id"
                    class="flex-1">
                 <div class="relative flex items-center">
-                  <div class="h-2 flex-1 bg-elevation-3"
-                       :class="{ 'bg-accent-orange': phase.status === 'completed' }">
+                  <div class="h-1.5 flex-1 rounded-full"
+                       :class="{
+                         'bg-accent-orange opacity-100': phase.status === 'completed',
+                         'bg-elevation-1': phase.status !== 'completed'
+                       }">
                   </div>
-                  <div class="w-4 h-4 rounded-full border-2 absolute -ml-2"
+                  <div class="w-4 h-4 rounded-full border-2 absolute -ml-2 cursor-pointer hover:scale-110 transition-transform"
                        :class="{
                          'bg-accent-orange border-accent-orange': phase.status === 'completed',
-                         'bg-elevation-2 border-border-medium': phase.status === 'pending',
+                         'bg-elevation-1 border-border-medium': phase.status === 'pending',
                          'bg-error-text border-error-text': phase.status === 'blocked'
                        }"
                        @click="showPhaseDetails(phase)">
