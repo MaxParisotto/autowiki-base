@@ -43,22 +43,20 @@
       </div>
 
       <!-- Auth Settings Form -->
-      <form @submit.prevent="saveAuthSettings" class="settings-form">
+      <form @submit.prevent="saveAuthSettings" class="settings-form" aria-label="Authentication Settings">
         <div class="settings-section">
-          <h2>API Keys & Authentication</h2>
+          <h2 id="auth-heading">API Keys & Authentication</h2>
           <!-- OpenAI Settings -->
           <div class="form-group">
-            <input type="hidden" autocomplete="username" value="openai">
-            <label for="openai-api">API Key</label>
-            <input 
-              id="openai-api" 
-              v-model="settings.openai.apiKey" 
-              type="password" 
-              autocomplete="current-password"
+            <AccessiblePasswordField
+              id="openai-api"
+              label="OpenAI API Key"
+              v-model="settings.openai.apiKey"
+              username-value="openai"
               placeholder="Enter OpenAI API key"
-            >
-          </div>
-          <div class="form-group">
+              describedby="auth-heading"
+              autocomplete="current-password"
+            />
             <label for="openai-model">Model</label>
             <input 
               id="openai-model" 
@@ -76,22 +74,22 @@
               type="url" 
               placeholder="Enter Custom GPT URL"
             >
-            <input type="hidden" autocomplete="username" value="custom-gpt">
-            <label for="custom-gpt-key">API Key</label>
-            <input 
-              id="custom-gpt-key" 
-              v-model="settings.customGpt.apiKey" 
-              type="password" 
-              autocomplete="current-password"
+            <AccessiblePasswordField
+              id="custom-gpt-key"
+              label="Custom GPT API Key"
+              v-model="settings.customGpt.apiKey"
+              username-value="custom-gpt"
               placeholder="Enter Custom GPT API key"
-            >
+              describedby="auth-heading"
+              autocomplete="current-password"
+            />
           </div>
           <button type="submit" class="save-button">Save Auth Settings</button>
         </div>
       </form>
 
       <!-- Connection Settings Form -->
-      <form @submit.prevent="saveConnectionSettings" class="settings-form">
+      <form @submit.prevent="saveConnectionSettings" class="settings-form" aria-label="Connection Settings">
         <div class="settings-section">
           <h2>Connection Settings</h2>
           <!-- Ollama Settings -->
@@ -113,15 +111,15 @@
               type="url" 
               placeholder="Enter Redis URL"
             >
-            <input type="hidden" autocomplete="username" value="redis">
-            <label for="redis-password">Password</label>
-            <input 
-              id="redis-password" 
-              v-model="settings.redis.password" 
-              type="password" 
-              autocomplete="current-password"
+            <AccessiblePasswordField
+              id="redis-password"
+              label="Password"
+              v-model="settings.redis.password"
+              username-value="redis"
               placeholder="Enter Redis password"
-            >
+              describedby="auth-heading"
+              autocomplete="current-password"
+            />
           </div>
           <!-- Nextcloud Settings -->
           <div class="form-group">
@@ -140,21 +138,22 @@
               autocomplete="username"
               placeholder="Enter Nextcloud username"
             >
-            <label for="nextcloud-password">Password</label>
-            <input 
-              id="nextcloud-password" 
-              v-model="settings.nextcloud.password" 
-              type="password" 
-              autocomplete="current-password"
+            <AccessiblePasswordField
+              id="nextcloud-password"
+              label="Password"
+              v-model="settings.nextcloud.password"
+              username-value="nextcloud"
               placeholder="Enter Nextcloud password"
-            >
+              describedby="auth-heading"
+              autocomplete="current-password"
+            />
           </div>
           <button type="submit" class="save-button">Save Connection Settings</button>
         </div>
       </form>
 
       <!-- RAG Settings Form -->
-      <form @submit.prevent="saveRagSettings" class="settings-form">
+      <form @submit.prevent="saveRagSettings" class="settings-form" aria-label="RAG Settings">
         <div class="settings-section">
           <h2>RAG Configuration</h2>
           <!-- Embedding Settings -->
@@ -192,15 +191,15 @@
               type="url" 
               placeholder="Vector store URL"
             >
-            <input type="hidden" autocomplete="username" value="vector-store">
-            <label for="vector-store-api-key">API Key</label>
-            <input 
-              id="vector-store-api-key" 
-              v-model="settings.rag.vectorStore.apiKey" 
-              type="password" 
-              autocomplete="current-password"
+            <AccessiblePasswordField
+              id="vector-store-api-key"
+              label="API Key"
+              v-model="settings.rag.vectorStore.apiKey"
+              username-value="vector-store"
               placeholder="Vector store API key"
-            >
+              describedby="auth-heading"
+              autocomplete="current-password"
+            />
           </div>
 
           <!-- Retrieval Settings -->
@@ -281,6 +280,7 @@ import { storeToRefs } from 'pinia'
 import { useSettingsStore } from '../stores/settingsStore'
 import { toast } from 'vue-sonner'
 import { testDatabaseConnections } from '../utils/api'
+import AccessiblePasswordField from '../components/AccessiblePasswordField.vue'
 
 const settingsStore = useSettingsStore()
 const { settings, loading, error } = storeToRefs(settingsStore)
