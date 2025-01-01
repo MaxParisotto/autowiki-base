@@ -3,36 +3,32 @@
 @tailwind utilities;
 
 @layer components {
-  /* Base Card */
+  /* Card */
   .card-modern {
     @apply bg-elevation-1 border border-border-weak rounded-lg p-4 transition-all duration-200;
   }
 
-  /* Badge Variants */
+  /* Badges */
   .badge {
     @apply inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium;
   }
-
   .badge-primary {
     @apply bg-accent-orange text-black;
   }
-
   .badge-secondary {
     @apply bg-elevation-2 text-text-primary hover:bg-elevation-2-hover;
   }
 
   /* Dropdown */
   .dropdown-content {
-    @apply absolute z-50 mt-2 rounded-lg bg-elevation-2 
-           shadow-md ring-1 ring-border-weak 
-           min-w-[180px] overflow-hidden;
+    @apply absolute z-50 mt-2 min-w-[180px] rounded-lg bg-elevation-2 
+           shadow-md ring-1 ring-border-weak overflow-hidden;
   }
 
-  /* Alert */
+  /* Alerts */
   .alert {
     @apply p-4 rounded-lg border mb-4 flex items-start;
   }
-
   .alert-error {
     @apply border-red-600/20 bg-red-600/10 text-[rgb(185,28,28)];
   }
@@ -43,7 +39,6 @@
            transition-colors focus:outline-none focus:ring-2 
            focus:ring-accent-orange focus:ring-offset-2;
   }
-
   .toggle-handle {
     @apply inline-block h-4 w-4 transform rounded-full bg-elevation-1 
            transition-transform;
@@ -53,49 +48,54 @@
   .tabs {
     @apply flex space-x-1 border-b border-border-weak;
   }
-
   .tab {
     @apply px-4 py-2 text-sm font-medium text-text-secondary 
            hover:text-text-primary border-b-2 border-transparent 
            hover:border-accent-orange transition-colors duration-150;
   }
-
   .tab-active {
     @apply text-accent-orange border-accent-orange;
   }
 
   /* Search Input */
   .search-input {
-    @apply pl-10 pr-4 py-2 w-full bg-elevation-2 
-           border border-border-weak rounded-lg
-           focus:ring-2 focus:ring-accent-orange 
+    @apply w-full pl-10 pr-4 py-2 bg-elevation-2 border border-border-weak 
+           rounded-lg focus:ring-2 focus:ring-accent-orange 
            focus:border-transparent transition-all duration-200;
   }
 
-  /* Loading States */
+  /* Skeleton Loader */
   .skeleton {
     @apply animate-pulse bg-elevation-1 rounded;
   }
 
-  /* Tooltip */
+  /* Tooltips */
   .tooltip {
-    @apply absolute z-50 px-2 py-1 text-xs font-medium 
-           text-black bg-accent-orange rounded shadow-md 
-           transition-opacity duration-200;
+    @apply absolute z-50 px-2 py-1 text-xs font-medium text-black 
+           bg-accent-orange rounded shadow-md transition-opacity duration-200;
   }
-
   .has-tooltip {
     @apply relative cursor-pointer;
   }
-
   .has-tooltip::after {
     @apply content-[attr(data-tooltip)] absolute bottom-full left-1/2 
            -translate-x-1/2 px-2 py-1 bg-elevation-3 rounded 
            text-xs text-text-primary opacity-0 pointer-events-none 
            transition-opacity duration-200 whitespace-nowrap z-50;
   }
-
   .has-tooltip:hover::after {
     @apply opacity-100;
+  }
+
+  /* Form Components */
+  .form-group {
+    @apply bg-elevation-1 p-4 rounded-lg border border-border-weak;
+  }
+  .input-field {
+    @apply w-full mt-1 rounded-lg bg-elevation-2 border-border-weak;
+  }
+  .btn-primary {
+    @apply px-4 py-2 bg-accent-orange hover:bg-accent-orange-dark 
+           text-black rounded-lg;
   }
 }

@@ -1,192 +1,40 @@
+import { createRouter, createWebHistory } from 'vue-router';
 
-import { createRouter, createWebHistory } from 'vue-router'
-
+// Define routes
 const routes = [
   {
     path: '/',
     name: 'Dashboard',
-    component: () => import('@/pages/Dashboard.vue'),
+    component: () => import('@/pages/Dashboard.vue'), // Lazy-loaded
   },
   {
     path: '/settings',
     name: 'Settings',
-    component: () => import('@/pages/Settings.vue'),
+    component: () => import('@/pages/Settings.vue'), // Lazy-loaded
   },
   {
     path: '/weaviate',
     name: 'Weaviate',
-    component: () => import('@/pages/Weaviate.vue'),
-  }
-]
+    component: () => import('@/pages/Weaviate.vue'), // Lazy-loaded
+  },
+  {
+    path: '/:pathMatch(.*)*',
+    redirect: '/', // Catch-all route for 404
+  },
+];
 
+// Create router instance
 const router = createRouter({
   history: createWebHistory(),
   routes,
-})
+});
 
-router.onError((error, to) => {
+// Global error handler for lazy-loaded modules
+router.onError((error) => {
   if (error.message.includes('Failed to fetch dynamically imported module')) {
-    window.location = to.fullPath
+    console.error('Module loading failed:', error);
+    window.location.reload();
   }
-})
+});
 
-export default router
-import { createRouter, createWebHistory } from 'vue-router'
-
-const routes = [
-  {
-    path: '/',
-    name: 'Dashboard',
-    component: () => import('../pages/Dashboard.vue')
-  },
-  {
-    path: '/settings',
-    name: 'Settings',
-    component: () => import('../pages/Settings.vue')
-  }
-]
-
-export default createRouter({
-  history: createWebHistory(),
-  routes
-})
-import { createRouter, createWebHistory } from 'vue-router'
-
-const routes = [
-  {
-    path: '/',
-    name: 'Dashboard',
-    component: () => import('../pages/Dashboard.vue')
-  },
-  {
-    path: '/settings',
-    name: 'Settings',
-    component: () => import('../pages/Settings.vue')
-  }
-]
-
-const router = createRouter({
-  history: createWebHistory(),
-  routes
-})
-
-export default router
-import { createRouter, createWebHistory } from 'vue-router'
-
-const routes = [
-  {
-    path: '/',
-    name: 'Dashboard',
-    component: () => import('../pages/Dashboard.vue')
-  },
-  {
-    path: '/settings',
-    name: 'Settings',
-    component: () => import('../pages/Settings.vue')
-  }
-]
-
-const router = createRouter({
-  history: createWebHistory(),
-  routes
-})
-
-export default router
-import { createRouter, createWebHistory } from 'vue-router'
-
-const routes = [
-  {
-    path: '/settings',
-    name: 'Settings',
-    component: () => import('../pages/Settings.vue')
-  },
-  // ...existing routes...
-]
-
-const router = createRouter({
-  history: createWebHistory(),
-  routes
-})
-
-export default router
-import { createRouter, createWebHistory } from 'vue-router'
-import Dashboard from '../pages/Dashboard.vue'
-
-const routes = [
-  {
-    path: '/',
-    name: 'Dashboard',
-    component: Dashboard
-  }
-]
-
-export default createRouter({
-  history: createWebHistory(),
-  routes
-})
-import { createRouter, createWebHistory } from 'vue-router'
-import Dashboard from '../pages/Dashboard.vue'
-
-const routes = [
-  {
-    path: '/',
-    name: 'Dashboard',
-    component: Dashboard
-  },
-  {
-    path: '/weaviate',
-    name: 'Weaviate',
-    component: () => import('../pages/Weaviate.vue')
-  },
-  {
-    path: '/settings',
-    name: 'Settings',
-    component: () => import('../pages/Settings.vue'),
-    children: [
-      {
-        path: 'agents',
-        name: 'OpenAIAgents',
-        component: () => import('../components/settings/OpenAIAgentsConfig.vue')
-      }
-    ]
-  }
-]
-
-export default createRouter({
-  history: createWebHistory(),
-  routes
-})
-import { createRouter, createWebHistory } from 'vue-router'
-// ...existing imports...
-import Weaviate from '../pages/Weaviate.vue'
-import Settings from '../pages/Settings.vue'
-
-const routes = [
-  // ...existing routes...
-  {
-    path: '/weaviate',
-    name: 'Weaviate',
-    component: Weaviate
-  },
-  {
-    path: '/settings',
-    name: 'Settings',
-    component: Settings,
-    children: [
-      {
-        path: 'agents',
-        name: 'OpenAIAgentsConfig',
-        component: () => import('../components/settings/OpenAIAgentsConfig.vue')
-      }
-      // Add more settings routes as needed
-    ]
-  }
-]
-
-// ...existing router creation and export...
-const router = createRouter({
-  history: createWebHistory(process.env.BASE_URL),
-  routes
-})
-
-export default router
+export default router;
