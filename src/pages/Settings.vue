@@ -110,6 +110,122 @@
           </div>
         </div>
 
+        <!-- RAG Settings -->
+        <div class="settings-section">
+          <h2>RAG Configuration</h2>
+          
+          <!-- Embedding Settings -->
+          <div class="form-group">
+            <label for="embedding-model">Embedding Model</label>
+            <select 
+              id="embedding-model" 
+              v-model="settings.rag.embeddingModel"
+              class="select-input"
+            >
+              <option value="text-embedding-3-small">text-embedding-3-small</option>
+              <option value="text-embedding-3-large">text-embedding-3-large</option>
+              <option value="text-embedding-ada-002">text-embedding-ada-002</option>
+            </select>
+          </div>
+
+          <!-- Vector Store Settings -->
+          <div class="form-group">
+            <h3>Vector Store</h3>
+            <label for="vector-store">Type</label>
+            <select 
+              id="vector-store" 
+              v-model="settings.rag.vectorStore.type"
+              class="select-input"
+            >
+              <option value="weaviate">Weaviate</option>
+              <option value="qdrant">Qdrant</option>
+              <option value="pinecone">Pinecone</option>
+            </select>
+
+            <label for="vector-store-url">URL</label>
+            <input 
+              id="vector-store-url" 
+              v-model="settings.rag.vectorStore.url" 
+              type="url" 
+              placeholder="Vector store URL"
+            >
+
+            <label for="vector-store-api-key">API Key</label>
+            <input 
+              id="vector-store-api-key" 
+              v-model="settings.rag.vectorStore.apiKey" 
+              type="password" 
+              placeholder="Vector store API key"
+            >
+          </div>
+
+          <!-- Retrieval Settings -->
+          <div class="form-group">
+            <h3>Retrieval Parameters</h3>
+            <label for="top-k">Top K Results</label>
+            <input 
+              id="top-k" 
+              v-model="settings.rag.retrieval.topK" 
+              type="number" 
+              min="1" 
+              max="20"
+            >
+
+            <label for="similarity-threshold">Similarity Threshold</label>
+            <input 
+              id="similarity-threshold" 
+              v-model="settings.rag.retrieval.similarityThreshold" 
+              type="number" 
+              step="0.01" 
+              min="0" 
+              max="1"
+            >
+
+            <label for="mmr-lambda">MMR Lambda</label>
+            <input 
+              id="mmr-lambda" 
+              v-model="settings.rag.retrieval.mmrLambda" 
+              type="number" 
+              step="0.1" 
+              min="0" 
+              max="1"
+            >
+          </div>
+
+          <!-- Text Chunking Settings -->
+          <div class="form-group">
+            <h3>Text Chunking</h3>
+            <label for="chunk-size">Chunk Size</label>
+            <input 
+              id="chunk-size" 
+              v-model="settings.rag.chunking.chunkSize" 
+              type="number" 
+              min="100" 
+              max="2000"
+            >
+
+            <label for="chunk-overlap">Chunk Overlap</label>
+            <input 
+              id="chunk-overlap" 
+              v-model="settings.rag.chunking.chunkOverlap" 
+              type="number" 
+              min="0" 
+              max="500"
+            >
+
+            <label for="chunk-strategy">Chunking Strategy</label>
+            <select 
+              id="chunk-strategy" 
+              v-model="settings.rag.chunking.strategy"
+              class="select-input"
+            >
+              <option value="fixed">Fixed Size</option>
+              <option value="paragraph">Paragraph</option>
+              <option value="sentence">Sentence</option>
+            </select>
+          </div>
+        </div>
+
         <button type="submit" class="save-button">Save Settings</button>
       </form>
     </div>
@@ -139,6 +255,24 @@ const settings = ref({
     url: '',
     username: '',
     password: ''
+  },
+  rag: {
+    embeddingModel: 'text-embedding-3-small',
+    vectorStore: {
+      type: 'weaviate',
+      url: '',
+      apiKey: ''
+    },
+    retrieval: {
+      topK: 4,
+      similarityThreshold: 0.7,
+      mmrLambda: 0.5
+    },
+    chunking: {
+      chunkSize: 500,
+      chunkOverlap: 50,
+      strategy: 'fixed'
+    }
   }
 })
 
@@ -162,24 +296,33 @@ const saveSettings = async () => {
   margin-top: 0.5rem;
 }
 
-h1 {
+.settings-section {
+  margin-bottom: 0.5rem;
+  padding: 0.5rem;
+  border: 1px solid var(--color-border);
+  border-radius: 3px;
+  background: var(--color-background-soft);
+}
+
+h1, h2, h3 {
   color: var(--color-heading);
+}
+
+h1 {
   font-size: 1.5rem;
   font-weight: 600;
   margin-bottom: 0.25rem;
 }
 
-.settings-section {
-  margin-bottom: 0.5rem;
-  padding: 0.5rem;
-  border: 1px solid #ddd;
-  border-radius: 3px;
-}
-
 h2 {
   font-size: 1rem;
   margin-bottom: 0.25rem;
-  color: var(--color-heading);
+}
+
+h3 {
+  font-size: 0.9rem;
+  margin: 0.5rem 0 0.25rem 0;
+  font-weight: 500;
 }
 
 .form-group {
@@ -191,20 +334,28 @@ label {
   margin-bottom: 0.15rem;
   font-weight: 500;
   font-size: 0.85rem;
+  color: var(--color-text);
 }
 
-input {
+input, .select-input {
   width: 100%;
   padding: 0.25rem;
   margin-bottom: 0.25rem;
-  border: 1px solid #ddd;
+  border: 1px solid var(--color-border);
   border-radius: 3px;
   font-size: 0.85rem;
   height: 1.75rem;
+  background: var(--color-background);
+  color: var(--color-text);
+}
+
+input:focus, .select-input:focus {
+  outline: none;
+  border-color: var(--color-border-hover);
 }
 
 .save-button {
-  background-color: #4CAF50;
+  background-color: var(--color-primary);
   color: white;
   padding: 0.35rem 0.75rem;
   border: none;
@@ -212,9 +363,14 @@ input {
   cursor: pointer;
   font-size: 0.85rem;
   margin-top: 0.25rem;
+  transition: background-color 0.2s;
 }
 
 .save-button:hover {
-  background-color: #45a049;
+  background-color: var(--color-primary-hover, #45a049);
+}
+
+input[type="number"] {
+  width: 100%;
 }
 </style>
