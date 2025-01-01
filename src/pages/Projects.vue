@@ -1,281 +1,91 @@
 <template>
-  <div class="projects-container">
-    <div class="projects-header">
-      <h1>Projects Management</h1>
-      <button class="new-project-button" @click="createProject">
-        <i class="fas fa-plus"></i> New Project
-      </button>
-    </div>
-
-    <!-- Project Creation/Edit Form -->
-    <div v-if="editingProject" class="project-form">
-      <div class="form-section">
-        <h2>{{ isEditing ? 'Edit Project' : 'Create New Project' }}</h2>
-        <div class="form-group">
-          <label>Project Name:</label>
-          <input v-model="editingProject.name" type="text" required>
+  <DefaultLayout title="Projects">
+    <!-- Project Grid -->
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-4">
+      <div v-for="project in projects" 
+           :key="project.id" 
+           class="bg-elevation-2 hover:bg-elevation-2-hover rounded-lg p-4 border border-border-weak transition-all duration-200">
+        <div class="flex justify-between items-start mb-3">
+          <span class="badge" :class="getStatusBadgeClass(project.status)">
+            {{ project.status }}
+          </span>
+          <button class="text-text-secondary hover:text-text-primary">
+            <span class="sr-only">Options</span>
+            <!-- Add your icon here -->
+          </button>
         </div>
-        <div class="form-group">
-          <label>Description:</label>
-          <textarea v-model="editingProject.description" rows="3"></textarea>
-        </div>
-        <div class="form-group">
-          <label>Repository URL:</label>
-          <input v-model="editingProject.repoUrl" type="url" placeholder="https://github.com/username/repo">
-        </div>
-        <div class="form-group">
-          <label>Project Type:</label>
-          <select v-model="editingProject.type">
-            <option value="documentation">Documentation</option>
-            <option value="code-review">Code Review</option>
-            <option value="testing">Testing</option>
-            <option value="research">Research</option>
-            <option value="analysis">Analysis</option>
-          </select>
-        </div>
-        <div class="form-group">
-          <label>Deadline:</label>
-          <input v-model="editingProject.deadline" type="date">
-        </div>
-
-        <!-- Add after deadline field -->
-        <h3>Project Phases</h3>
-        <div class="phases-container">
-          <div v-for="(phase, index) in editingProject.phases" :key="index" class="phase-item">
-            <div class="phase-header">
-              <h4>Phase {{index + 1}}</h4>
-              <button class="remove-phase" @click="removePhase(index)">×</button>
-            </div>
-            <div class="form-group">
-              <label>Name:</label>
-              <input v-model="phase.name" type="text" required>
-            </div>
-            <div class="form-group">
-              <label>Description:</label>
-              <textarea v-model="phase.description" rows="2"></textarea>
-            </div>
-            <div class="form-group">
-              <label>Status:</label>
-              <select v-model="phase.status">
-                <option value="pending">Pending</option>
-                <option value="in_progress">In Progress</option>
-                <option value="review">Under Review</option>
-                <option value="completed">Completed</option>
-                <option value="blocked">Blocked</option>
-              </select>
-            </div>
-            <div class="phase-requirements">
-              <div class="form-group approval-toggle">
-                <label>Requires Approval:</label>
-                <input type="checkbox" v-model="phase.requiresApproval">
+        
+        <h3 class="text-text-primary font-medium text-lg mb-2">{{ project.name }}</h3>
+        <p class="text-text-secondary text-sm mb-4">{{ project.description }}</p>
+        
+        <div class="space-y-4">
+          <!-- Progress Bar -->
+          <div>
+            <div class="h-2 bg-elevation-1 rounded-full overflow-hidden">
+              <div class="h-full bg-accent-orange transition-all duration-300"
+                   :style="{ width: project.progress + '%' }">
               </div>
-              <div v-if="phase.requiresApproval" class="form-group">
-                <label>Approver:</label>
-                <select v-model="phase.approverId">
-                  <option value="">Select Approver</option>
-                  <option v-for="user in availableApprovers" 
-                          :key="user.id" 
-                          :value="user.id">
-                    {{ user.name }}
-                  </option>
-                </select>
-              </div>
-              <div class="form-group">
-                <label>Dependencies:</label>
-                <select v-model="phase.dependencies" multiple>
-                  <option v-for="(p, i) in editingProject.phases" 
-                          :key="i" 
-                          :value="i"
-                          :disabled="i === index">
-                    Phase {{i + 1}}: {{p.name}}
-                  </option>
-                </select>
-              </div>
+            </div>
+            <div class="flex justify-between mt-2">
+              <span class="text-text-secondary text-sm">Progress</span>
+              <span class="text-text-secondary text-sm">{{ project.progress }}%</span>
             </div>
           </div>
-          <button class="add-phase-button" @click="addPhase">+ Add Phase</button>
-        </div>
 
-        <!-- Agent Assignment Section -->
-        <div class="agents-section">
-          <h3>Assigned Agents</h3>
-          <div class="assigned-agents">
-            <div v-for="agent in availableAgents" :key="agent.id" class="agent-card"
-                 :class="{ selected: isAgentAssigned(agent.id) }"
-                 @click="toggleAgent(agent.id)">
-              <div class="agent-info">
-                <span class="agent-name">{{ agent.name }}</span>
-                <span class="agent-type">{{ agent.type }}</span>
-              </div>
-              <div class="agent-role" v-if="isAgentAssigned(agent.id)">
-                <select v-model="editingProject.agents[agent.id].role">
-                  <option value="primary">Primary</option>
-                  <option value="secondary">Secondary</option>
-                  <option value="reviewer">Reviewer</option>
-                  <option value="assistant">Assistant</option>
-                </select>
-              </div>
+          <!-- Team Members -->
+          <div class="flex items-center justify-between">
+            <div class="flex -space-x-2">
+              <img v-for="member in project.team" 
+                   :key="member.id"
+                   :src="member.avatar"
+                   :alt="member.name"
+                   class="w-8 h-8 rounded-full border-2 border-elevation-2">
             </div>
-          </div>
-        </div>
-
-        <div class="form-actions">
-          <button class="cancel-button" @click="cancelEdit">Cancel</button>
-          <button class="save-button" @click="saveProject">Save Project</button>
-        </div>
-      </div>
-    </div>
-
-    <!-- Projects List -->
-    <div v-else class="projects-grid">
-      <div v-for="project in projects" :key="project.id" class="project-card">
-        <div class="project-header">
-          <h3>{{ project.name }}</h3>
-          <div class="project-actions">
-            <a :href="project.viewUrl" target="_blank" class="view-button">
-              <i class="fas fa-external-link-alt"></i>
-            </a>
-            <button @click="editProject(project)" class="edit-button">
-              <i class="fas fa-edit"></i>
+            <button class="bg-accent-orange hover:bg-accent-orange-dark text-black px-4 py-2 rounded-lg transition-colors font-medium">
+              View Details
             </button>
-            <button @click="deleteProject(project.id)" class="delete-button">
-              <i class="fas fa-trash"></i>
-            </button>
-          </div>
-        </div>
-        <p class="project-description">{{ project.description }}</p>
-        <div class="project-meta">
-          <span class="project-type">{{ project.type }}</span>
-          <span class="project-deadline">Due: {{ formatDate(project.deadline) }}</span>
-        </div>
-        <div class="assigned-agents-preview">
-          <div v-for="(agent, agentId) in project.agents" 
-               :key="agentId" 
-               class="assigned-agent-tag"
-               :title="`${getAgentName(agentId)} - ${agent.role}`">
-            {{ getAgentName(agentId) }}
           </div>
         </div>
       </div>
     </div>
-  </div>
+  </DefaultLayout>
 </template>
 
 <script>
+import DefaultLayout from '../layouts/DefaultLayout.vue'
+
 export default {
-  name: "Projects",
+  components: { DefaultLayout },
   data() {
     return {
-      projects: [],
-      editingProject: null,
-      isEditing: false,
-      availableAgents: [], // Will be populated from Agents store/API
-      availableApprovers: [
-        { id: 1, name: 'Project Manager' },
-        { id: 2, name: 'Tech Lead' },
-        { id: 3, name: 'Quality Assurance' }
-      ]
+      projects: [] // Will be populated from API
     }
   },
   methods: {
-    createProject() {
-      this.editingProject = {
-        name: '',
-        description: '',
-        repoUrl: '',
-        type: 'documentation',
-        deadline: '',
-        agents: {},
-        viewUrl: '',
-        phases: [{
-          name: 'Initial Phase',
-          description: '',
-          status: 'pending',
-          requiresApproval: false,
-          approverId: '',
-          dependencies: [],
-          completedAt: null,
-          approvedAt: null,
-          approverNotes: ''
-        }]
-      };
-      this.isEditing = false;
-    },
-    editProject(project) {
-      this.editingProject = { ...project };
-      this.isEditing = true;
-    },
-    async saveProject() {
-      try {
-        const project = { ...this.editingProject };
-        // Generate view URL based on project configuration
-        project.viewUrl = `/projects/${project.id}/view`;
-        
-        // TODO: Implement API call to save project
-        console.log('Saving project:', project);
-        
-        this.editingProject = null;
-      } catch (error) {
-        console.error('Error saving project:', error);
-      }
-    },
-    cancelEdit() {
-      this.editingProject = null;
-      this.isEditing = false;
-    },
-    deleteProject(id) {
-      if (confirm('Are you sure you want to delete this project?')) {
-        // TODO: Implement API call to delete project
-        this.projects = this.projects.filter(p => p.id !== id);
-      }
-    },
-    isAgentAssigned(agentId) {
-      return !!this.editingProject?.agents[agentId];
-    },
-    toggleAgent(agentId) {
-      if (this.isAgentAssigned(agentId)) {
-        delete this.editingProject.agents[agentId];
-      } else {
-        this.editingProject.agents[agentId] = { role: 'assistant' };
-      }
-    },
-    getAgentName(agentId) {
-      return this.availableAgents.find(a => a.id === agentId)?.name || 'Unknown Agent';
-    },
-    formatDate(date) {
-      return new Date(date).toLocaleDateString();
-    },
-    addPhase() {
-      this.editingProject.phases.push({
-        name: '',
-        description: '',
-        status: 'pending',
-        requiresApproval: false,
-        approverId: '',
-        dependencies: [],
-        completedAt: null,
-        approvedAt: null,
-        approverNotes: ''
-      });
-    },
-    removePhase(index) {
-      // Remove phase and update dependencies
-      this.editingProject.phases = this.editingProject.phases.filter((_, i) => i !== index)
-        .map(phase => ({
-          ...phase,
-          dependencies: phase.dependencies
-            .filter(dep => dep !== index)
-            .map(dep => dep > index ? dep - 1 : dep)
-        }));
+    getStatusBadgeClass(status) {
+      return {
+        'active': 'badge-primary',
+        'completed': 'badge-secondary',
+        'paused': 'badge bg-warning-text bg-opacity-20 text-warning-text',
+      }[status] || 'badge-secondary'
     }
   },
   async mounted() {
-    // TODO: Fetch projects and available agents from API
-    this.availableAgents = [
-      { id: 1, name: 'Documentation Bot', type: 'assistant' },
-      { id: 2, name: 'Code Reviewer', type: 'expert' },
-      { id: 3, name: 'Research Assistant', type: 'researcher' }
-    ];
+    // Placeholder data
+    this.projects = [
+      {
+        id: 1,
+        name: 'API Documentation',
+        description: 'Comprehensive documentation for the new API endpoints',
+        status: 'active',
+        progress: 75,
+        team: [
+          { id: 1, name: 'AI Bot 1', avatar: '/avatars/bot1.png' },
+          { id: 2, name: 'AI Bot 2', avatar: '/avatars/bot2.png' }
+        ]
+      }
+      // Add more projects...
+    ]
   }
 }
 </script>
