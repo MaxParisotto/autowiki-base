@@ -80,4 +80,4 @@ export default {
     margin: 0 auto;
     padding: 20px;
 }
-</style></v-col>
+</style>

@@ -33,25 +33,22 @@ cd [project-name]
 2 Install dependencies
 
 ```bash
-npm install
-# or
-yarn
+pnpm install
+
 ```
 
 3 Run development server
 
 ```bash
-npm run dev
-# or
-yarn dev
+pnpm run dev
+
 ```
 
 ## Building for Production
 
 ```bash
-npm run build
-# or
-yarn build
+pnpm run build
+
 ```
 
 ## IDE Setup
