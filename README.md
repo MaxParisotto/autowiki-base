@@ -1,4 +1,8 @@
-# Vue 3 + Vite Project
+# AutoWiki Base
+
+A modern Vue.js-based wiki platform built with performance and simplicity in mind.
+
+## Project Structure
 
 ## Overview
 

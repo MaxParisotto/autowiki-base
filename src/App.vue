@@ -1,33 +1,41 @@
 <template>
   <div class="app flex min-h-screen bg-canvas text-text-primary">
-    <nav class="navbar">
-      <ul>
+    <!-- Sidebar Navigation -->
+    <nav class="w-64 min-h-screen bg-elevation-1 border-r border-border-weak">
+      <!-- Logo/Header -->
+      <div class="p-4 border-b border-border-weak">
+        <h1 class="text-xl font-bold text-accent-orange">AutoWiki</h1>
+      </div>
+      
+      <!-- Navigation Items -->
+      <ul class="p-2 space-y-1">
         <li v-for="item in menuItems" :key="item.path">
           <router-link 
-            :to="item.path" 
-            :title="item.tooltip"
-            class="nav-link"
+            :to="item.path"
+            v-tooltip="item.tooltip"
+            class="flex items-center px-4 py-2 rounded-lg text-sm transition-colors"
+            :class="[
+              $route.path === item.path 
+                ? 'bg-accent-orange text-black font-medium'
+                : 'text-text-secondary hover:bg-elevation-2'
+            ]"
           >
-            <component :is="item.icon" class="w-5 h-5 mr-2" />
+            <component :is="item.icon" class="w-5 h-5 mr-3" />
             {{ item.name }}
           </router-link>
         </li>
       </ul>
     </nav>
-    <main class="content">
+
+    <!-- Main Content -->
+    <main class="flex-1 overflow-auto">
       <router-view v-slot="{ Component }">
-        <transition
+        <transition 
+          name="fade"
           mode="out-in"
-          enter-active-class="transition duration-200 ease-out"
-          enter-from-class="transform opacity-0"
-          enter-to-class="opacity-100"
-          leave-active-class="transition duration-150 ease-in"
-          leave-from-class="opacity-100"
-          leave-to-class="transform opacity-0"
+          appear
         >
-          <div class="page-container">
-            <component :is="Component" />
-          </div>
+          <component :is="Component" />
         </transition>
       </router-view>
     </main>
@@ -356,4 +364,17 @@ tr:nth-child(even) {
   border-color: var(--border-weak) !important;
   color: var(--text-primary) !important;
 }
+
+/* Fade Transition */
+.fade-enter-active,
+.fade-leave-active {
+  transition: opacity 0.15s ease;
+}
+
+.fade-enter-from,
+.fade-leave-to {
+  opacity: 0;
+}
+
+/* Remove other existing styles as they're handled by Tailwind */
 </style>

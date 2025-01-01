@@ -83,4 +83,35 @@
   --bg-elevation-1-hover: #202020;
   --bg-elevation-2-hover: #2A2A2A;
   --bg-elevation-3-hover: #383838;
+
+  /* Core colors */
+  --accent-orange: #FF5F1F;
+  --accent-orange-dark: #E65518;
+  
+  /* Background elevations */
+  --bg-canvas: #121212;
+  --bg-elevation-1: #1E1E1E;
+  --bg-elevation-2: #252525;
+  --bg-elevation-3: #2F2F2F;
+  
+  /* Text colors */
+  --text-primary: #E6E6E6;
+  --text-secondary: #A0A0A0;
+  --text-muted: #707070;
+  
+  /* Borders */
+  --border-weak: rgba(255, 255, 255, 0.05);
+  --border-medium: rgba(255, 255, 255, 0.08);
+  --border-strong: rgba(255, 255, 255, 0.12);
+  
+  /* Status colors */
+  --success: #4CAF50;
+  --warning: #FF9800;
+  --error: #F44336;
+  --info: #2196F3;
+}
+
+/* Dark theme is now default */
+:root[class='dark'] {
+  color-scheme: dark;
 }

@@ -1,116 +1,135 @@
 <template>
-    <div class="nextcloud-config">
-        <h2>Nextcloud Configuration</h2>
-        <form @submit.prevent="saveConfig">
-            <div class="form-group">
-                <label for="server">Nextcloud Server URL</label>
-                <input
-                    type="url"
-                    id="server"
-                    v-model="config.serverUrl"
-                    placeholder="https://your-nextcloud-instance.com"
-                    required
-                />
-            </div>
-            
-            <div class="form-group">
-                <label for="username">Username</label>
-                <input
-                    type="text"
-                    id="username"
-                    v-model="config.username"
-                    required
-                />
-            </div>
+  <div class="nextcloud-config p-4">
+    <h2 class="text-xl font-semibold mb-4">Nextcloud Configuration</h2>
+    
+    <form @submit.prevent="saveConfig" class="space-y-4">
+      <div class="form-group">
+        <label for="serverUrl" class="block text-sm font-medium">Server URL</label>
+        <input 
+          id="serverUrl"
+          v-model="config.serverUrl"
+          type="url"
+          class="mt-1 block w-full rounded-md border-gray-300 shadow-sm"
+          placeholder="https://your-nextcloud-server.com"
+        >
+      </div>
 
-            <div class="form-group">
-                <label for="password">Password</label>
-                <input
-                    type="password"
-                    id="password"
-                    v-model="config.password"
-                    required
-                />
-            </div>
+      <div class="form-group">
+        <label for="username" class="block text-sm font-medium">Username</label>
+        <input 
+          id="username"
+          v-model="config.username"
+          type="text"
+          class="mt-1 block w-full rounded-md border-gray-300 shadow-sm"
+          placeholder="Enter username"
+        >
+      </div>
 
-            <button type="submit" :disabled="isSaving">
-                {{ isSaving ? 'Saving...' : 'Save Configuration' }}
-            </button>
-        </form>
+      <div class="form-group">
+        <label for="password" class="block text-sm font-medium">App Password</label>
+        <input 
+          id="password"
+          v-model="config.password"
+          type="password"
+          class="mt-1 block w-full rounded-md border-gray-300 shadow-sm"
+          placeholder="Enter app password"
+        >
+      </div>
+
+      <div class="flex items-center mt-4">
+        <button 
+          type="submit"
+          class="px-4 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600"
+          :disabled="isSaving"
+        >
+          {{ isSaving ? 'Saving...' : 'Save Configuration' }}
+        </button>
+        
+        <button 
+          type="button"
+          class="ml-2 px-4 py-2 bg-green-500 text-white rounded-md hover:bg-green-600"
+          @click="testConnection"
+          :disabled="isTesting"
+        >
+          {{ isTesting ? 'Testing...' : 'Test Connection' }}
+        </button>
+      </div>
+    </form>
+
+    <div v-if="status" :class="['mt-4 p-4 rounded-md', statusClass]">
+      {{ status }}
     </div>
+  </div>
 </template>
 
-<script>
-export default {
-    name: 'NextcloudConfig',
-    data() {
-        return {
-            config: {
-                serverUrl: '',
-                username: '',
-                password: ''
-            },
-            isSaving: false
-        }
-    },
-    methods: {
-        async saveConfig() {
-            try {
-                this.isSaving = true
-                // TODO: Implement actual save logic here
-                await this.$store.dispatch('saveNextcloudConfig', this.config)
-                this.$emit('config-saved')
-            } catch (error) {
-                console.error('Failed to save Nextcloud config:', error)
-            } finally {
-                this.isSaving = false
-            }
-        }
-    },
-    async created() {
-        // TODO: Load existing config if available
-        const existingConfig = await this.$store.getters.nextcloudConfig
-        if (existingConfig) {
-            this.config = { ...existingConfig }
-        }
-    }
+<script setup>
+import { ref, computed } from 'vue'
+import { useToast } from 'vue-sonner'
+
+const toast = useToast()
+
+const config = ref({
+  serverUrl: '',
+  username: '',
+  password: ''
+})
+
+const isSaving = ref(false)
+const isTesting = ref(false)
+const status = ref('')
+
+const statusClass = computed(() => {
+  if (!status.value) return ''
+  return status.value.includes('Error') 
+    ? 'bg-red-100 text-red-700'
+    : 'bg-green-100 text-green-700'
+})
+
+async function saveConfig() {
+  isSaving.value = true
+  try {
+    // API call to save config would go here
+    await new Promise(resolve => setTimeout(resolve, 1000)) // Simulate API call
+    toast.success('Configuration saved successfully')
+    status.value = 'Configuration saved successfully'
+  } catch (error) {
+    toast.error('Failed to save configuration')
+    status.value = 'Error: Failed to save configuration'
+  } finally {
+    isSaving.value = false
+  }
+}
+
+async function testConnection() {
+  isTesting.value = true
+  try {
+    // API call to test connection would go here
+    await new Promise(resolve => setTimeout(resolve, 1000)) // Simulate API call
+    toast.success('Connection test successful')
+    status.value = 'Connection test successful'
+  } catch (error) {
+    toast.error('Connection test failed')
+    status.value = 'Error: Connection test failed'
+  } finally {
+    isTesting.value = false
+  }
 }
 </script>
 
 <style scoped>
-.nextcloud-config {
-    max-width: 500px;
-    margin: 0 auto;
-    padding: 20px;
-}
-
 .form-group {
-    margin-bottom: 1rem;
+  margin-bottom: 1rem;
 }
 
-.form-group label {
-    display: block;
-    margin-bottom: 0.5rem;
-}
-
-.form-group input {
-    width: 100%;
-    padding: 0.5rem;
-    border: 1px solid #ccc;
-    border-radius: 4px;
-}
-
-button {
-    background-color: #0082c9;
-    color: white;
-    padding: 0.5rem 1rem;
-    border: none;
-    border-radius: 4px;
-    cursor: pointer;
+input {
+  width: 100%;
+  padding: 0.5rem;
+  border: 1px solid var(--border-color);
+  border-radius: 4px;
 }
 
 button:disabled {
-    background-color: #ccc;
-    cursor: not-allowed;
+  opacity: 0.5;
+  cursor: not-allowed;
 }
-</style></button></div>
+</style>

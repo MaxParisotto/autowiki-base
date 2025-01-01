@@ -1,17 +1,19 @@
 import { createApp } from "vue";
 import App from "./App.vue";
-import router from "./router"; // This will now point to src/router.js
-import '@vueuse/core'
+import router from "./router";
+import { createPinia } from 'pinia';
+import '@vueuse/core';
 
 // Import styles in correct order
-import './styles/tailwind.css'       // Tailwind first
-import './styles/variables.css'      // Then variables
-import './styles/base.css'          // Then base styles
-import './styles/components.css'    // Then components
+import './styles/tailwind.css'
+import './styles/variables.css'
+import './styles/base.css'
+import './styles/components.css'
 
 const app = createApp(App);
+const pinia = createPinia();
 
-// Simple tooltip directive
+// Global tooltip directive
 app.directive('tooltip', {
   mounted(el, binding) {
     el.setAttribute('title', binding.value);
@@ -20,10 +22,11 @@ app.directive('tooltip', {
   updated(el, binding) {
     el.setAttribute('title', binding.value);
   }
-})
+});
 
-// Add a dark class to html element
+// Theme configuration
 document.documentElement.classList.add('dark');
 
 app.use(router);
+app.use(pinia);
 app.mount("#app");
