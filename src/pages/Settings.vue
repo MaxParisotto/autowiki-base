@@ -1,174 +1,62 @@
 <template>
-  <div class="settings-container">
-    <h1>API Settings</h1>
-    
-    <form @submit.prevent="saveSettings" class="settings-form">
-      <!-- Weaviate Section -->
-      <section class="settings-section">
-        <div class="section-header" @click="toggleSection('weaviate')">
-          <h2>Weaviate Configuration</h2>
-          <span class="toggle-icon">{{ isExpanded.weaviate ? '−' : '+' }}</span>
-        </div>
-        <div class="section-content" v-show="isExpanded.weaviate">
-          <div class="form-group">
-            <label>Host URL:</label>
-            <input v-model="settings.weaviate.host" type="url" required>
+  <div class="p-6">
+    <h1 class="text-2xl font-bold mb-6 text-text-primary">Settings</h1>
+    <div class="space-y-6">
+      <!-- General Settings -->
+      <div class="bg-elevation-2 rounded-lg p-6 border border-border-weak">
+        <h2 class="text-xl font-semibold mb-4 text-text-primary">General Settings</h2>
+        <div class="space-y-4">
+          <div class="flex items-center justify-between p-4 bg-elevation-3 hover:bg-elevation-3-hover rounded-lg transition-colors">
+            // ...existing toggle content...
           </div>
-          <div class="form-group">
-            <label>API Key:</label>
-            <input v-model="settings.weaviate.apiKey" type="password" required>
-          </div>
-        </div>
-      </section>
 
-      <!-- PostgreSQL Section -->
-      <section class="settings-section">
-        <div class="section-header" @click="toggleSection('postgresql')">
-          <h2>PostgreSQL Configuration</h2>
-          <span class="toggle-icon">{{ isExpanded.postgresql ? '−' : '+' }}</span>
-        </div>
-        <div class="section-content" v-show="isExpanded.postgresql">
-          <div class="form-group">
-            <label>Host:</label>
-            <input v-model="settings.postgresql.host" type="text" required>
-          </div>
-          <div class="form-group">
-            <label>Port:</label>
-            <input v-model="settings.postgresql.port" type="number" required>
-          </div>
-          <div class="form-group">
-            <label>Database:</label>
-            <input v-model="settings.postgresql.database" type="text" required>
-          </div>
-          <div class="form-group">
-            <label>Username:</label>
-            <input v-model="settings.postgresql.username" type="text" required>
-          </div>
-          <div class="form-group">
-            <label>Password:</label>
-            <input v-model="settings.postgresql.password" type="password" required>
+          <div class="flex items-center justify-between p-4 bg-elevation-3 hover:bg-elevation-3-hover rounded-lg transition-colors">
+            // ...existing notifications content...
           </div>
         </div>
-      </section>
-
-      <!-- Redis Section -->
-      <section class="settings-section">
-        <div class="section-header" @click="toggleSection('redis')">
-          <h2>Redis Configuration</h2>
-          <span class="toggle-icon">{{ isExpanded.redis ? '−' : '+' }}</span>
-        </div>
-        <div class="section-content" v-show="isExpanded.redis">
-          <div class="form-group">
-            <label>Host:</label>
-            <input v-model="settings.redis.host" type="text" required placeholder="localhost">
-          </div>
-          <div class="form-group">
-            <label>Port:</label>
-            <input v-model="settings.redis.port" type="number" required placeholder="6379">
-          </div>
-          <div class="form-group">
-            <label>Password:</label>
-            <input v-model="settings.redis.password" type="password">
-          </div>
-          <div class="form-group">
-            <label>Database:</label>
-            <input v-model="settings.redis.db" type="number" min="0" max="15" required placeholder="0">
-          </div>
-          <div class="form-group">
-            <label>TLS:</label>
-            <input type="checkbox" v-model="settings.redis.tls">
-          </div>
-        </div>
-      </section>
-
-      <!-- Nextcloud Section -->
-      <section class="settings-section">
-        <div class="section-header" @click="toggleSection('nextcloud')">
-          <h2>Nextcloud Configuration</h2>
-          <span class="toggle-icon">{{ isExpanded.nextcloud ? '−' : '+' }}</span>
-        </div>
-        <div class="section-content" v-show="isExpanded.nextcloud">
-          <div class="form-group">
-            <label>Instance URL:</label>
-            <input v-model="settings.nextcloud.url" type="url" required>
-          </div>
-          <div class="form-group">
-            <label>Username:</label>
-            <input v-model="settings.nextcloud.username" type="text" required>
-          </div>
-          <div class="form-group">
-            <label>App Password:</label>
-            <input v-model="settings.nextcloud.password" type="password" required>
-          </div>
-        </div>
-      </section>
-
-      <!-- OpenAI Custom GPT Section -->
-      <section class="settings-section">
-        <div class="section-header" @click="toggleSection('openai')">
-          <h2>OpenAI Custom GPT Configuration</h2>
-          <span class="toggle-icon">{{ isExpanded.openai ? '−' : '+' }}</span>
-        </div>
-        <div class="section-content" v-show="isExpanded.openai">
-          <div class="form-group">
-            <label>API Key:</label>
-            <input v-model="settings.openai.apiKey" type="password" required>
-          </div>
-          <div class="form-group">
-            <label>Model Name:</label>
-            <input v-model="settings.openai.model" type="text" required>
-          </div>
-          <div class="form-group">
-            <label>Organization ID:</label>
-            <input v-model="settings.openai.orgId" type="text">
-          </div>
-        </div>
-      </section>
-
-      <!-- Ollama Section -->
-      <section class="settings-section">
-        <div class="section-header" @click="toggleSection('ollama')">
-          <h2>Ollama Configuration</h2>
-          <span class="toggle-icon">{{ isExpanded.ollama ? '−' : '+' }}</span>
-        </div>
-        <div class="section-content" v-show="isExpanded.ollama">
-          <div class="form-group">
-            <label>Base URL:</label>
-            <input v-model="settings.ollama.baseUrl" type="url" required placeholder="http://localhost:11434">
-          </div>
-          <div class="form-group">
-            <label>Model Name:</label>
-            <input v-model="settings.ollama.model" type="text" required placeholder="llama2">
-          </div>
-          <div class="form-group">
-            <label>System Context:</label>
-            <textarea v-model="settings.ollama.systemContext" rows="3" placeholder="Optional system context for the model"></textarea>
-          </div>
-          <div class="form-group">
-            <label>Temperature:</label>
-            <input v-model="settings.ollama.temperature" type="number" step="0.1" min="0" max="1" required>
-          </div>
-        </div>
-      </section>
-
-      <!-- Prime Directives Section -->
-      <section class="settings-section">
-        <div class="section-header" @click="toggleSection('primeDirectives')">
-          <h2>Prime Directives Configuration</h2>
-          <span class="toggle-icon">{{ isExpanded.primeDirectives ? '−' : '+' }}</span>
-        </div>
-        <div class="section-content" v-show="isExpanded.primeDirectives">
-          <div v-for="(directive, index) in settings.primeDirectives" :key="index" class="form-group">
-            <label>Directive {{index + 1}}:</label>
-            <input v-model="directive.text" type="text" required>
-          </div>
-        </div>
-      </section>
-
-      <div class="form-actions">
-        <button type="submit" class="save-button">Save Settings</button>
       </div>
-    </form>
+
+      <!-- API Configuration -->
+      <div class="bg-elevation-2 rounded-lg p-6 border border-border-weak">
+        <h2 class="text-xl font-semibold mb-4 text-text-primary">API Configuration</h2>
+        <div class="space-y-4">
+          <div>
+            <label class="block text-text-primary mb-2">API Key</label>
+            <div class="flex gap-2">
+              <input type="password" 
+                     v-model="apiKey" 
+                     class="flex-1 bg-elevation-3 border border-border-weak rounded-lg px-4 py-2 text-text-primary placeholder:text-text-secondary focus:border-accent-orange focus:ring-1 focus:ring-accent-orange">
+              <button class="bg-accent-orange hover:bg-accent-orange-dark text-black px-4 py-2 rounded-lg transition-colors font-medium">
+                Save
+              </button>
+            </div>
+          </div>
+
+          <div>
+            <label class="block text-text-primary mb-2">Endpoint URL</label>
+            <input type="text" 
+                   v-model="endpointUrl" 
+                   class="w-full bg-elevation-3 border border-border-weak rounded-lg px-4 py-2 text-text-primary placeholder:text-text-secondary focus:border-accent-orange focus:ring-1 focus:ring-accent-orange">
+          </div>
+        </div>
+      </div>
+
+      <!-- Danger Zone -->
+      <div class="bg-elevation-2 rounded-lg p-6 border border-error-text border-opacity-20">
+        <h2 class="text-xl font-semibold mb-4 text-error-text">Danger Zone</h2>
+        <div class="space-y-4">
+          <div class="flex items-center justify-between p-4 bg-elevation-3 hover:bg-elevation-3-hover rounded-lg transition-colors">
+            <div>
+              <h3 class="text-text-primary font-medium">Reset All Settings</h3>
+              <p class="text-text-secondary text-sm">This will reset all settings to default</p>
+            </div>
+            <button class="bg-error-text bg-opacity-10 hover:bg-opacity-20 text-error-text px-4 py-2 rounded-lg transition-colors font-medium">
+              Reset
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
   </div>
 </template>
 
