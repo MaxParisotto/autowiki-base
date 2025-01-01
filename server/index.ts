@@ -15,13 +15,14 @@ const pool = mysql.createPool(config.mysql)
 
 // Create Redis client
 const redis = createClient({
-  socket: {
-    host: config.redis.host,
-    port: config.redis.port
-  },
-  password: config.redis.password,
-  database: config.redis.db
+  url: `redis://${config.redis.host}:${config.redis.port}`,
+  database: config.redis.db // Remove password since Redis auth is not configured
 })
+
+// Add more error handling for Redis
+redis.on('error', (err) => {
+  console.error('Redis Error:', err);
+});
 
 // Connect to Redis
 redis.connect().catch(err => {
