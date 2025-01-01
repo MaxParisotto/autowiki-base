@@ -8,15 +8,19 @@
     "build": "vite build",
     "preview": "vite preview",
     "test:db": "NODE_OPTIONS='--import tsx' tsx src/utils/testConnection.ts",
-    "test:db:watch": "NODE_OPTIONS='--import tsx' tsx watch src/utils/testConnection.ts"
+    "test:db:watch": "NODE_OPTIONS='--import tsx' tsx watch src/utils/testConnection.ts",
+    "server": "node server/index.js",
+    "server:dev": "node --watch server/index.js"
   },
   "dependencies": {
     "@heroicons/vue": "^2.2.0",
     "@iconify/vue": "^4.2.0",
     "axios": "^1.7.9",
     "chalk": "^4.1.2",
+    "cors": "^2.8.5",
     "date-fns": "^4.1.0",
     "dotenv": "^16.4.7",
+    "express": "^4.21.2",
     "mysql2": "^3.12.0",
     "pinia": "^2.3.0",
     "redis": "^4.7.0",
