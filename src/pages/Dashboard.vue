@@ -1,133 +1,130 @@
 <template>
-  <div class="dashboard-container">
-    <!-- Overview Stats -->
-    <div class="stats-grid">
-      <div class="stat-card" v-for="stat in stats" :key="stat.title">
-        <h3>{{ stat.title }}</h3>
-        <div class="stat-value">{{ stat.value }}</div>
-        <div class="stat-change" :class="stat.trend">
-          {{ stat.change }}
+  <div class="bg-elevation-1 p-6 rounded-lg">
+    <h1 class="text-2xl font-bold mb-6 text-text-primary">Dashboard</h1>
+    <div class="dashboard-container">
+      <!-- Overview Stats -->
+      <div class="stats-grid">
+        <div class="stat-card" v-for="stat in stats" :key="stat.title">
+          <h3>{{ stat.title }}</h3>
+          <div class="stat-value">{{ stat.value }}</div>
+          <div class="stat-change" :class="stat.trend">
+            {{ stat.change }}
+          </div>
         </div>
       </div>
-    </div>
 
-    <!-- Tasks Requiring Attention -->
-    <div class="dashboard-section">
-      <h2>Pending Approvals</h2>
-      <div class="approval-cards">
-        <div v-for="task in pendingApprovals" :key="task.id" class="approval-card">
-          <div class="approval-header">
-            <span class="project-tag">{{ task.projectName }}</span>
-            <span class="phase-tag">Phase {{ task.phaseNumber }}</span>
-          </div>
-          <h3>{{ task.title }}</h3>
-          <p>{{ task.description }}</p>
-          <div class="completion-info">
-            <div class="progress-bar">
-              <div class="progress" :style="{ width: task.progress + '%' }"></div>
+      <!-- Tasks Requiring Attention -->
+      <div class="dashboard-section">
+        <h2>Pending Approvals</h2>
+        <div class="approval-cards">
+          <div v-for="task in pendingApprovals" :key="task.id" class="approval-card">
+            <div class="approval-header">
+              <span class="project-tag">{{ task.projectName }}</span>
+              <span class="phase-tag">Phase {{ task.phaseNumber }}</span>
             </div>
-            <span>{{ task.progress }}% Complete</span>
-          </div>
-          <div class="assigned-agents">
-            <img v-for="agent in task.agents" 
-                 :key="agent.id" 
-                 :src="agent.avatar" 
-                 :title="agent.name"
-                 class="agent-avatar">
-          </div>
-          <div class="approval-actions">
-            <button @click="showApprovalDialog(task)" class="review-button">
-              Review
-            </button>
-          </div>
-        </div>
-      </div>
-    </div>
-
-    <!-- Active Projects Timeline -->
-    <div class="dashboard-section">
-      <h2>Active Projects</h2>
-      <div class="timeline-container">
-        <div v-for="project in activeProjects" :key="project.id" class="timeline-item">
-          <div class="timeline-header">
-            <h3>{{ project.name }}</h3>
-            <span class="project-status" :class="project.status">
-              {{ project.status }}
-            </span>
-          </div>
-          <div class="phase-timeline">
-            <div v-for="phase in project.phases" 
-                 :key="phase.id" 
-                 class="phase-node"
-                 :class="phase.status"
-                 @click="showPhaseDetails(phase)">
-              <div class="phase-dot"></div>
-              <div class="phase-label">{{ phase.name }}</div>
+            <h3>{{ task.title }}</h3>
+            <p>{{ task.description }}</p>
+            <div class="completion-info">
+              <div class="progress-bar">
+                <div class="progress" :style="{ width: task.progress + '%' }"></div>
+              </div>
+              <span>{{ task.progress }}% Complete</span>
+            </div>
+            <div class="assigned-agents">
+              <img v-for="agent in task.agents" 
+                   :key="agent.id" 
+                   :src="agent.avatar" 
+                   :title="agent.name"
+                   class="agent-avatar">
+            </div>
+            <div class="approval-actions">
+              <button @click="showApprovalDialog(task)" class="review-button">
+                Review
+              </button>
             </div>
           </div>
         </div>
       </div>
-    </div>
 
-    <!-- Approval Dialog -->
-    <div v-if="showDialog" class="approval-dialog">
-      <div class="dialog-content">
-        <h2>Review Task</h2>
-        <div class="task-details">
-          <h3>{{ selectedTask.title }}</h3>
-          <p>{{ selectedTask.description }}</p>
-          
-          <div class="completion-evidence">
-            <h4>Completion Evidence</h4>
-            <div class="evidence-items">
-              <div v-for="item in selectedTask.evidence" 
-                   :key="item.id" 
-                   class="evidence-item">
-                <i :class="item.icon"></i>
-                <a :href="item.link" target="_blank">{{ item.name }}</a>
+      <!-- Active Projects Timeline -->
+      <div class="dashboard-section">
+        <h2>Active Projects</h2>
+        <div class="timeline-container">
+          <div v-for="project in activeProjects" :key="project.id" class="timeline-item">
+            <div class="timeline-header">
+              <h3>{{ project.name }}</h3>
+              <span class="project-status" :class="project.status">
+                {{ project.status }}
+              </span>
+            </div>
+            <div class="phase-timeline">
+              <div v-for="phase in project.phases" 
+                   :key="phase.id" 
+                   class="phase-node"
+                   :class="phase.status"
+                   @click="showPhaseDetails(phase)">
+                <div class="phase-dot"></div>
+                <div class="phase-label">{{ phase.name }}</div>
               </div>
             </div>
           </div>
+        </div>
+      </div>
 
-          <div class="review-form">
-            <label>Review Notes:</label>
-            <textarea v-model="reviewNotes" 
-                      rows="4" 
-                      placeholder="Provide feedback or reasons for approval/rejection">
-            </textarea>
-
-            <div class="feedback-options" v-if="showRejectionOptions">
-              <h4>Rejection Feedback</h4>
-              <div v-for="option in rejectionOptions" 
-                   :key="option.id" 
-                   class="feedback-option">
-                <input type="checkbox" 
-                       v-model="selectedFeedback" 
-                       :value="option.id">
-                <label>{{ option.label }}</label>
+      <!-- Approval Dialog -->
+      <div v-if="showDialog" class="approval-dialog">
+        <div class="dialog-content">
+          <h2>Review Task</h2>
+          <div class="task-details">
+            <h3>{{ selectedTask.title }}</h3>
+            <p>{{ selectedTask.description }}</p>
+            
+            <div class="completion-evidence">
+              <h4>Completion Evidence</h4>
+              <div class="evidence-items">
+                <div v-for="item in selectedTask.evidence" 
+                     :key="item.id" 
+                     class="evidence-item">
+                  <i :class="item.icon"></i>
+                  <a :href="item.link" target="_blank">{{ item.name }}</a>
+                </div>
               </div>
             </div>
-          </div>
 
-          <div class="dialog-actions">
-            <button @click="closeDialog" class="cancel-button">
-              Cancel
-            </button>
-            <button @click="rejectTask" class="reject-button">
-              Reject
-            </button>
-            <button @click="approveTask" class="approve-button">
-              Approve
-            </button>
+            <div class="review-form">
+              <label>Review Notes:</label>
+              <textarea v-model="reviewNotes" 
+                        rows="4" 
+                        placeholder="Provide feedback or reasons for approval/rejection">
+              </textarea>
+
+              <div class="feedback-options" v-if="showRejectionOptions">
+                <h4>Rejection Feedback</h4>
+                <div v-for="option in rejectionOptions" 
+                     :key="option.id" 
+                     class="feedback-option">
+                  <input type="checkbox" 
+                         v-model="selectedFeedback" 
+                         :value="option.id">
+                  <label>{{ option.label }}</label>
+                </div>
+              </div>
+            </div>
+
+            <div class="dialog-actions">
+              <button @click="closeDialog" class="cancel-button">
+                Cancel
+              </button>
+              <button @click="rejectTask" class="reject-button">
+                Reject
+              </button>
+              <button @click="approveTask" class="approve-button">
+                Approve
+              </button>
+            </div>
           </div>
         </div>
       </div>
-    </div>
-  </div>
-  <div class="p-4">
-    <h1 class="text-2xl font-bold mb-4">Dashboard</h1>
-    <div class="card-modern">
-      <p>Welcome to your dashboard!</p>
     </div>
   </div>
 </template>

@@ -1,219 +1,222 @@
 <template>
-  <div class="agents-container">
-    <h1>AI Agents Management</h1>
-    
-    <section class="agents-section">
-      <div class="agents-grid">
-        <div v-for="(agent, index) in agents" :key="index" class="agent-config">
-          <div class="agent-header">
-            <div class="agent-title">
-              <h3>{{ agent.name || `Agent ${index + 1}` }}</h3>
-              <span class="agent-status" :class="{ active: agent.active }">
-                {{ agent.active ? 'Active' : 'Inactive' }}
-              </span>
+  <div class="bg-elevation-1 p-6 rounded-lg">
+    <h1 class="text-2xl font-bold mb-6 text-text-primary">Agents</h1>
+    <div class="agents-container">
+      <h1>AI Agents Management</h1>
+      
+      <section class="agents-section">
+        <div class="agents-grid">
+          <div v-for="(agent, index) in agents" :key="index" class="agent-config">
+            <div class="agent-header">
+              <div class="agent-title">
+                <h3>{{ agent.name || `Agent ${index + 1}` }}</h3>
+                <span class="agent-status" :class="{ active: agent.active }">
+                  {{ agent.active ? 'Active' : 'Inactive' }}
+                </span>
+              </div>
+              <button class="delete-button" @click="removeAgent(index)">×</button>
             </div>
-            <button class="delete-button" @click="removeAgent(index)">×</button>
-          </div>
-
-          <!-- Basic Configuration -->
-          <div class="form-section">
-            <h4>Basic Configuration</h4>
-            <div class="form-group">
-              <label>Name:</label>
-              <input v-model="agent.name" type="text" required placeholder="Agent name">
+  
+            <!-- Basic Configuration -->
+            <div class="form-section">
+              <h4>Basic Configuration</h4>
+              <div class="form-group">
+                <label>Name:</label>
+                <input v-model="agent.name" type="text" required placeholder="Agent name">
+              </div>
+              <div class="form-group">
+                <label>Type:</label>
+                <select v-model="agent.type">
+                  <option value="assistant">Assistant</option>
+                  <option value="expert">Domain Expert</option>
+                  <option value="researcher">Researcher</option>
+                  <option value="critic">Critic/Reviewer</option>
+                  <option value="custom">Custom</option>
+                </select>
+              </div>
+              <div class="form-group">
+                <label>API Endpoint:</label>
+                <input v-model="agent.endpoint" type="url" required placeholder="https://api.example.com">
+              </div>
+              <div class="form-group">
+                <label>API Key:</label>
+                <input v-model="agent.apiKey" type="password" required>
+              </div>
             </div>
-            <div class="form-group">
-              <label>Type:</label>
-              <select v-model="agent.type">
-                <option value="assistant">Assistant</option>
-                <option value="expert">Domain Expert</option>
-                <option value="researcher">Researcher</option>
-                <option value="critic">Critic/Reviewer</option>
-                <option value="custom">Custom</option>
-              </select>
-            </div>
-            <div class="form-group">
-              <label>API Endpoint:</label>
-              <input v-model="agent.endpoint" type="url" required placeholder="https://api.example.com">
-            </div>
-            <div class="form-group">
-              <label>API Key:</label>
-              <input v-model="agent.apiKey" type="password" required>
-            </div>
-          </div>
-
-          <!-- Role Definition -->
-          <div class="form-section">
-            <h4>Role Definition</h4>
-            <div class="form-group">
-              <label>Primary Role:</label>
-              <input v-model="agent.role.primary" type="text" placeholder="e.g., Technical Documentation Specialist">
-            </div>
-            <div class="form-group">
-              <label>Expertise Areas:</label>
-              <div class="tags-input-container mb-8">
-                <div class="flex gap-2 flex-wrap mb-2">
-                  <span 
-                    v-for="tag in agent.role.expertise" 
-                    :key="tag"
-                    class="inline-flex items-center gap-1 px-3 py-1 bg-elevation-2 rounded-full"
-                  >
-                    {{ tag }}
-                    <button 
-                      @click="removeTag(agent, tag)"
-                      class="text-text-secondary hover:text-text-primary"
+  
+            <!-- Role Definition -->
+            <div class="form-section">
+              <h4>Role Definition</h4>
+              <div class="form-group">
+                <label>Primary Role:</label>
+                <input v-model="agent.role.primary" type="text" placeholder="e.g., Technical Documentation Specialist">
+              </div>
+              <div class="form-group">
+                <label>Expertise Areas:</label>
+                <div class="tags-input-container mb-8">
+                  <div class="flex gap-2 flex-wrap mb-2">
+                    <span 
+                      v-for="tag in agent.role.expertise" 
+                      :key="tag"
+                      class="inline-flex items-center gap-1 px-3 py-1 bg-elevation-2 rounded-full"
                     >
-                      ×
+                      {{ tag }}
+                      <button 
+                        @click="removeTag(agent, tag)"
+                        class="text-text-secondary hover:text-text-primary"
+                      >
+                        ×
+                      </button>
+                    </span>
+                  </div>
+                  <div class="flex gap-2">
+                    <input
+                      v-model="agent.role.expertiseTag"
+                      @keydown.enter.prevent="addTag(agent)"
+                      placeholder="Add new tag..."
+                      class="flex-1 px-4 py-2 rounded-lg"
+                    />
+                    <button 
+                      @click="addTag(agent)"
+                      class="bg-accent-orange text-black px-4 py-2 rounded-lg"
+                    >
+                      Add Tag
                     </button>
-                  </span>
-                </div>
-                <div class="flex gap-2">
-                  <input
-                    v-model="agent.role.expertiseTag"
-                    @keydown.enter.prevent="addTag(agent)"
-                    placeholder="Add new tag..."
-                    class="flex-1 px-4 py-2 rounded-lg"
-                  />
-                  <button 
-                    @click="addTag(agent)"
-                    class="bg-accent-orange text-black px-4 py-2 rounded-lg"
-                  >
-                    Add Tag
-                  </button>
+                  </div>
                 </div>
               </div>
             </div>
-          </div>
-
-          <!-- Personality -->
-          <div class="form-section">
-            <h4>Personality</h4>
-            <div class="form-group">
-              <label>Communication Style:</label>
-              <select v-model="agent.personality.communicationStyle">
-                <option value="formal">Formal</option>
-                <option value="casual">Casual</option>
-                <option value="technical">Technical</option>
-                <option value="friendly">Friendly</option>
-                <option value="socratic">Socratic</option>
-              </select>
+  
+            <!-- Personality -->
+            <div class="form-section">
+              <h4>Personality</h4>
+              <div class="form-group">
+                <label>Communication Style:</label>
+                <select v-model="agent.personality.communicationStyle">
+                  <option value="formal">Formal</option>
+                  <option value="casual">Casual</option>
+                  <option value="technical">Technical</option>
+                  <option value="friendly">Friendly</option>
+                  <option value="socratic">Socratic</option>
+                </select>
+              </div>
+              <div class="form-group">
+                <label>Traits:</label>
+                <div class="traits-grid">
+                  <label v-for="trait in personalityTraits" :key="trait.id">
+                    <input 
+                      type="checkbox" 
+                      v-model="agent.personality.traits" 
+                      :value="trait.id"
+                    >
+                    {{ trait.name }}
+                  </label>
+                </div>
+              </div>
             </div>
-            <div class="form-group">
-              <label>Traits:</label>
-              <div class="traits-grid">
-                <label v-for="trait in personalityTraits" :key="trait.id">
+  
+            <!-- Context Management -->
+            <div class="form-section">
+              <h4>Context Management</h4>
+              <div class="form-group">
+                <label>System Context:</label>
+                <textarea 
+                  v-model="agent.context.system" 
+                  rows="3" 
+                  placeholder="Define the agent's core behavior and limitations"
+                ></textarea>
+              </div>
+              <div class="form-group">
+                <label>Knowledge Base:</label>
+                <div class="knowledge-sources">
+                  <div v-for="(source, idx) in agent.context.knowledgeSources" 
+                       :key="idx" 
+                       class="knowledge-source">
+                    <input v-model="source.url" type="url" placeholder="Resource URL">
+                    <select v-model="source.type">
+                      <option value="documentation">Documentation</option>
+                      <option value="api">API Reference</option>
+                      <option value="guidelines">Guidelines</option>
+                      <option value="examples">Examples</option>
+                    </select>
+                    <button @click="removeKnowledgeSource(agent, idx)" class="remove-source">×</button>
+                  </div>
+                  <button @click="addKnowledgeSource(agent)" class="add-source">+ Add Resource</button>
+                </div>
+              </div>
+            </div>
+  
+            <!-- Prime Directives -->
+            <div class="form-section">
+              <h4>Prime Directives</h4>
+              <div class="form-group directives-grid">
+                <label v-for="directive in primeDirectives" :key="directive.id" class="directive-item">
                   <input 
                     type="checkbox" 
-                    v-model="agent.personality.traits" 
-                    :value="trait.id"
+                    v-model="agent.directives" 
+                    :value="directive.id"
                   >
-                  {{ trait.name }}
+                  <span class="directive-text" :title="directive.text">
+                    {{directive.text}}
+                  </span>
+                </label>
+              </div>
+            </div>
+  
+            <!-- Advanced Settings -->
+            <div class="form-section">
+              <h4>Advanced Settings</h4>
+              <div class="form-group">
+                <label>Temperature:</label>
+                <input 
+                  v-model="agent.settings.temperature" 
+                  type="range" 
+                  min="0" 
+                  max="1" 
+                  step="0.1"
+                >
+                <span class="range-value">{{ agent.settings.temperature }}</span>
+              </div>
+              <div class="form-group">
+                <label>Max Tokens:</label>
+                <input 
+                  v-model="agent.settings.maxTokens" 
+                  type="number" 
+                  min="100" 
+                  max="4000"
+                >
+              </div>
+              <div class="form-group">
+                <label>Memory Management:</label>
+                <select v-model="agent.settings.memoryManagement">
+                  <option value="none">No Memory</option>
+                  <option value="conversation">Conversation History</option>
+                  <option value="summarized">Summarized History</option>
+                  <option value="selective">Selective Memory</option>
+                </select>
+              </div>
+              <div class="form-group switches">
+                <label class="switch">
+                  <input type="checkbox" v-model="agent.settings.learning">
+                  <span class="slider"></span>
+                  Adaptive Learning
+                </label>
+                <label class="switch">
+                  <input type="checkbox" v-model="agent.settings.collaborative">
+                  <span class="slider"></span>
+                  Collaborative Mode
                 </label>
               </div>
             </div>
           </div>
-
-          <!-- Context Management -->
-          <div class="form-section">
-            <h4>Context Management</h4>
-            <div class="form-group">
-              <label>System Context:</label>
-              <textarea 
-                v-model="agent.context.system" 
-                rows="3" 
-                placeholder="Define the agent's core behavior and limitations"
-              ></textarea>
-            </div>
-            <div class="form-group">
-              <label>Knowledge Base:</label>
-              <div class="knowledge-sources">
-                <div v-for="(source, idx) in agent.context.knowledgeSources" 
-                     :key="idx" 
-                     class="knowledge-source">
-                  <input v-model="source.url" type="url" placeholder="Resource URL">
-                  <select v-model="source.type">
-                    <option value="documentation">Documentation</option>
-                    <option value="api">API Reference</option>
-                    <option value="guidelines">Guidelines</option>
-                    <option value="examples">Examples</option>
-                  </select>
-                  <button @click="removeKnowledgeSource(agent, idx)" class="remove-source">×</button>
-                </div>
-                <button @click="addKnowledgeSource(agent)" class="add-source">+ Add Resource</button>
-              </div>
-            </div>
-          </div>
-
-          <!-- Prime Directives -->
-          <div class="form-section">
-            <h4>Prime Directives</h4>
-            <div class="form-group directives-grid">
-              <label v-for="directive in primeDirectives" :key="directive.id" class="directive-item">
-                <input 
-                  type="checkbox" 
-                  v-model="agent.directives" 
-                  :value="directive.id"
-                >
-                <span class="directive-text" :title="directive.text">
-                  {{directive.text}}
-                </span>
-              </label>
-            </div>
-          </div>
-
-          <!-- Advanced Settings -->
-          <div class="form-section">
-            <h4>Advanced Settings</h4>
-            <div class="form-group">
-              <label>Temperature:</label>
-              <input 
-                v-model="agent.settings.temperature" 
-                type="range" 
-                min="0" 
-                max="1" 
-                step="0.1"
-              >
-              <span class="range-value">{{ agent.settings.temperature }}</span>
-            </div>
-            <div class="form-group">
-              <label>Max Tokens:</label>
-              <input 
-                v-model="agent.settings.maxTokens" 
-                type="number" 
-                min="100" 
-                max="4000"
-              >
-            </div>
-            <div class="form-group">
-              <label>Memory Management:</label>
-              <select v-model="agent.settings.memoryManagement">
-                <option value="none">No Memory</option>
-                <option value="conversation">Conversation History</option>
-                <option value="summarized">Summarized History</option>
-                <option value="selective">Selective Memory</option>
-              </select>
-            </div>
-            <div class="form-group switches">
-              <label class="switch">
-                <input type="checkbox" v-model="agent.settings.learning">
-                <span class="slider"></span>
-                Adaptive Learning
-              </label>
-              <label class="switch">
-                <input type="checkbox" v-model="agent.settings.collaborative">
-                <span class="slider"></span>
-                Collaborative Mode
-              </label>
-            </div>
-          </div>
         </div>
-      </div>
-      
-      <div class="actions">
-        <button class="add-button" @click="addAgent">Add Agent</button>
-        <button class="save-button" @click="saveAgents">Save Changes</button>
-      </div>
-    </section>
+        
+        <div class="actions">
+          <button class="add-button" @click="addAgent">Add Agent</button>
+          <button class="save-button" @click="saveAgents">Save Changes</button>
+        </div>
+      </section>
+    </div>
   </div>
 </template>
 
