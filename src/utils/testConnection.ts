@@ -25,22 +25,14 @@ async function testMySQLConnection() {
 async function testRedisConnection() {
   console.log(chalk.yellow('\nTesting Redis connection...'))
   try {
-    // Set a timeout for the Redis connection attempt
-    const timeoutPromise = new Promise((_, reject) => 
-      setTimeout(() => reject(new Error('Connection timeout')), 5000)
-    )
-    
-    // Try to connect with timeout
-    await Promise.race([
-      redisClient.connect(),
-      timeoutPromise
-    ])
-
+    // Don't try to connect again if already connected
+    if (!redisClient.isOpen) {
+      await redisClient.connect()
+    }
     const pong = await redisClient.ping()
     console.log(chalk.green('✓ Redis Connection successful'))
-    console.log(chalk.gray(`  URL: ${process.env.REDIS_URL}`))
+    console.log(chalk.gray(`  Host: ${process.env.REDIS_HOST}`))
     console.log(chalk.gray(`  Response: ${pong}`))
-    await redisClient.quit()
     return true
   } catch (error: any) {
     console.log(chalk.red('✗ Redis Connection failed'))
@@ -79,6 +71,12 @@ async function runConnectionTests() {
       console.log(chalk.gray('2. Verify that MySQL and Redis servers are running'))
       console.log(chalk.gray('3. Check firewall settings and port availability'))
     }
+
+    // Cleanup
+    if (redisClient.isOpen) {
+      await redisClient.quit()
+    }
+    await mysqlPool.end()
 
     // Exit with appropriate code
     process.exit(mysqlSuccess && redisSuccess ? 0 : 1)

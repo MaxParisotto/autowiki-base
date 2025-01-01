@@ -7,10 +7,15 @@ import { initializeDatabase } from './initDatabase'
 // Ensure .env is loaded from project root
 dotenv.config({ path: path.resolve(process.cwd(), '.env') })
 
+// Construct Redis URL from components with authentication
+const redisUrl = process.env.REDIS_PASSWORD 
+  ? `redis://default:${encodeURIComponent(process.env.REDIS_PASSWORD)}@${process.env.REDIS_HOST}:${process.env.REDIS_PORT}`
+  : `redis://${process.env.REDIS_HOST}:${process.env.REDIS_PORT}`
+
 // Verify environment variables are loaded
 console.log('Attempting connections with:')
 console.log(`MySQL: ${process.env.MYSQL_HOST}:3306`)
-console.log(`Redis: ${process.env.REDIS_URL}`)
+console.log(`Redis: ${redisUrl.replace(/\/\/.*@/, '//')}`) // Hide password in logs
 
 // MySQL Configuration
 export const mysqlConfig = {
@@ -28,8 +33,7 @@ export const mysqlConfig = {
 
 // Redis Configuration
 export const redisConfig = {
-  url: process.env.REDIS_URL,
-  password: process.env.REDIS_PASSWORD,
+  url: redisUrl,
   database: parseInt(process.env.REDIS_DB || '0'),
   socket: {
     connectTimeout: 10000,
@@ -43,21 +47,19 @@ export const redisConfig = {
   }
 }
 
-// Create MySQL pool with error handling
-export const mysqlPool = mysql.createPool({
-  ...mysqlConfig,
-  socketTimeout: 10000
-})
+// Create MySQL pool (removed invalid socketTimeout)
+export const mysqlPool = mysql.createPool(mysqlConfig)
 
-// Create Redis client
+// Create Redis client with improved error handling
 export const redisClient = createClient(redisConfig)
 
-// Improved error handling
 redisClient.on('error', (err) => {
   if (err.code === 'ECONNREFUSED') {
-    console.error(`Redis connection refused at ${process.env.REDIS_URL}`)
+    console.error(`Redis connection refused at ${process.env.REDIS_HOST}:${process.env.REDIS_PORT}`)
   } else if (err.code === 'ENOTFOUND') {
-    console.error(`Redis host not found at ${process.env.REDIS_URL}`)
+    console.error(`Redis host not found at ${process.env.REDIS_HOST}`)
+  } else if (err.message.includes('AUTH')) {
+    console.error('Redis authentication failed. Please check your Redis password configuration.')
   } else {
     console.error('Redis Client Error:', err.message)
   }
@@ -84,7 +86,7 @@ export const initializeConnections = async () => {
     if (error.code === 'ECONNREFUSED') {
       console.error(`Connection refused. Please verify that the services are running and accessible:`)
       console.error(`MySQL: ${process.env.MYSQL_HOST}`)
-      console.error(`Redis: ${process.env.REDIS_URL}`)
+      console.error(`Redis: ${redisUrl}`)
     } else {
       console.error(`Error: ${error.message}`)
     }
