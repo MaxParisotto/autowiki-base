@@ -8,50 +8,53 @@
       {{ error }}
     </div>
     <div class="settings-content">
-      <form @submit.prevent="saveSettings" class="settings-form">
-        <!-- Database Connection Status -->
-        <div class="settings-section connection-status">
-          <h2>Database Connection Status</h2>
-          <div class="status-grid">
-            <div class="status-item">
-              <span class="status-label">MySQL</span>
-              <span :class="['status-badge', mysqlStatus.connected ? 'connected' : 'disconnected']">
-                {{ mysqlStatus.message }}
-              </span>
-              <span v-if="mysqlStatus.details" class="status-details">
-                {{ mysqlStatus.details }}
-              </span>
-            </div>
-            
-            <div class="status-item">
-              <span class="status-label">Redis</span>
-              <span :class="['status-badge', redisStatus.connected ? 'connected' : 'disconnected']">
-                {{ redisStatus.message }}
-              </span>
-              <span v-if="redisStatus.details" class="status-details">
-                {{ redisStatus.details }}
-              </span>
-            </div>
+      <!-- Database Connection Form -->
+      <div class="settings-section connection-status">
+        <h2>Database Connection Status</h2>
+        <div class="status-grid">
+          <div class="status-item">
+            <span class="status-label">MySQL</span>
+            <span :class="['status-badge', mysqlStatus.connected ? 'connected' : 'disconnected']">
+              {{ mysqlStatus.message }}
+            </span>
+            <span v-if="mysqlStatus.details" class="status-details">
+              {{ mysqlStatus.details }}
+            </span>
           </div>
           
-          <button 
-            @click="testConnections" 
-            :disabled="isTesting" 
-            class="test-button"
-          >
-            {{ isTesting ? 'Testing...' : 'Test Connections' }}
-          </button>
+          <div class="status-item">
+            <span class="status-label">Redis</span>
+            <span :class="['status-badge', redisStatus.connected ? 'connected' : 'disconnected']">
+              {{ redisStatus.message }}
+            </span>
+            <span v-if="redisStatus.details" class="status-details">
+              {{ redisStatus.details }}
+            </span>
+          </div>
         </div>
+        
+        <button 
+          @click.prevent="testConnections" 
+          :disabled="isTesting" 
+          class="test-button"
+        >
+          {{ isTesting ? 'Testing...' : 'Test Connections' }}
+        </button>
+      </div>
 
-        <!-- OpenAI Settings -->
+      <!-- Auth Settings Form -->
+      <form @submit.prevent="saveAuthSettings" class="settings-form">
         <div class="settings-section">
-          <h2>OpenAI Settings</h2>
+          <h2>API Keys & Authentication</h2>
+          <!-- OpenAI Settings -->
           <div class="form-group">
+            <input type="hidden" autocomplete="username" value="openai">
             <label for="openai-api">API Key</label>
             <input 
               id="openai-api" 
               v-model="settings.openai.apiKey" 
               type="password" 
+              autocomplete="current-password"
               placeholder="Enter OpenAI API key"
             >
           </div>
@@ -64,11 +67,34 @@
               placeholder="e.g., gpt-4"
             >
           </div>
+          <!-- Custom GPT Settings -->
+          <div class="form-group">
+            <label for="custom-gpt-url">URL</label>
+            <input 
+              id="custom-gpt-url" 
+              v-model="settings.customGpt.url" 
+              type="url" 
+              placeholder="Enter Custom GPT URL"
+            >
+            <input type="hidden" autocomplete="username" value="custom-gpt">
+            <label for="custom-gpt-key">API Key</label>
+            <input 
+              id="custom-gpt-key" 
+              v-model="settings.customGpt.apiKey" 
+              type="password" 
+              autocomplete="current-password"
+              placeholder="Enter Custom GPT API key"
+            >
+          </div>
+          <button type="submit" class="save-button">Save Auth Settings</button>
         </div>
+      </form>
 
-        <!-- Ollama Settings -->
+      <!-- Connection Settings Form -->
+      <form @submit.prevent="saveConnectionSettings" class="settings-form">
         <div class="settings-section">
-          <h2>Ollama Settings</h2>
+          <h2>Connection Settings</h2>
+          <!-- Ollama Settings -->
           <div class="form-group">
             <label for="ollama-url">URL</label>
             <input 
@@ -78,32 +104,7 @@
               placeholder="Enter Ollama URL"
             >
           </div>
-        </div>
-
-        <!-- Custom GPT Settings -->
-        <div class="settings-section">
-          <h2>Custom GPT Settings</h2>
-          <div class="form-group">
-            <label for="custom-gpt-url">URL</label>
-            <input 
-              id="custom-gpt-url" 
-              v-model="settings.customGpt.url" 
-              type="url" 
-              placeholder="Enter Custom GPT URL"
-            >
-            <label for="custom-gpt-key">API Key</label>
-            <input 
-              id="custom-gpt-key" 
-              v-model="settings.customGpt.apiKey" 
-              type="password" 
-              placeholder="Enter Custom GPT API key"
-            >
-          </div>
-        </div>
-
-        <!-- Redis Settings -->
-        <div class="settings-section">
-          <h2>Redis Settings</h2>
+          <!-- Redis Settings -->
           <div class="form-group">
             <label for="redis-url">URL</label>
             <input 
@@ -112,19 +113,17 @@
               type="url" 
               placeholder="Enter Redis URL"
             >
+            <input type="hidden" autocomplete="username" value="redis">
             <label for="redis-password">Password</label>
             <input 
               id="redis-password" 
               v-model="settings.redis.password" 
               type="password" 
+              autocomplete="current-password"
               placeholder="Enter Redis password"
             >
           </div>
-        </div>
-
-        <!-- Nextcloud Settings -->
-        <div class="settings-section">
-          <h2>Nextcloud Settings</h2>
+          <!-- Nextcloud Settings -->
           <div class="form-group">
             <label for="nextcloud-url">URL</label>
             <input 
@@ -138,6 +137,7 @@
               id="nextcloud-username" 
               v-model="settings.nextcloud.username" 
               type="text" 
+              autocomplete="username"
               placeholder="Enter Nextcloud username"
             >
             <label for="nextcloud-password">Password</label>
@@ -145,15 +145,18 @@
               id="nextcloud-password" 
               v-model="settings.nextcloud.password" 
               type="password" 
+              autocomplete="current-password"
               placeholder="Enter Nextcloud password"
             >
           </div>
+          <button type="submit" class="save-button">Save Connection Settings</button>
         </div>
+      </form>
 
-        <!-- RAG Settings -->
+      <!-- RAG Settings Form -->
+      <form @submit.prevent="saveRagSettings" class="settings-form">
         <div class="settings-section">
           <h2>RAG Configuration</h2>
-          
           <!-- Embedding Settings -->
           <div class="form-group">
             <label for="embedding-model">Embedding Model</label>
@@ -189,12 +192,13 @@
               type="url" 
               placeholder="Vector store URL"
             >
-
+            <input type="hidden" autocomplete="username" value="vector-store">
             <label for="vector-store-api-key">API Key</label>
             <input 
               id="vector-store-api-key" 
               v-model="settings.rag.vectorStore.apiKey" 
               type="password" 
+              autocomplete="current-password"
               placeholder="Vector store API key"
             >
           </div>
@@ -264,9 +268,8 @@
               <option value="sentence">Sentence</option>
             </select>
           </div>
+          <button type="submit" class="save-button">Save RAG Settings</button>
         </div>
-
-        <button type="submit" class="save-button">Save Settings</button>
       </form>
     </div>
   </div>
@@ -289,6 +292,48 @@ onMounted(async () => {
     toast.error('Failed to load settings')
   }
 })
+
+const saveAuthSettings = async () => {
+  try {
+    await settingsStore.saveSettings({
+      ...settings.value,
+      // Only include auth-related settings
+      openai: settings.value.openai,
+      customGpt: settings.value.customGpt
+    })
+    toast.success('Authentication settings saved')
+  } catch (err) {
+    toast.error('Error saving authentication settings')
+  }
+}
+
+const saveConnectionSettings = async () => {
+  try {
+    await settingsStore.saveSettings({
+      ...settings.value,
+      // Only include connection-related settings
+      ollama: settings.value.ollama,
+      redis: settings.value.redis,
+      nextcloud: settings.value.nextcloud
+    })
+    toast.success('Connection settings saved')
+  } catch (err) {
+    toast.error('Error saving connection settings')
+  }
+}
+
+const saveRagSettings = async () => {
+  try {
+    await settingsStore.saveSettings({
+      ...settings.value,
+      // Only include RAG-related settings
+      rag: settings.value.rag
+    })
+    toast.success('RAG settings saved')
+  } catch (err) {
+    toast.error('Error saving RAG settings')
+  }
+}
 
 const saveSettings = async () => {
   try {

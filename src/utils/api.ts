@@ -1,21 +1,41 @@
 import axios from 'axios'
 
-// Determine the base URL based on environment
-const BASE_URL = import.meta.env.PROD ? '/api' : '/api'
+const isDev = import.meta.env.DEV
 
 const api = axios.create({
-  baseURL: BASE_URL,
-  timeout: 5000,
+  baseURL: '/api',
+  timeout: 10000, // Increase timeout for development
   headers: {
     'Content-Type': 'application/json'
   }
 })
 
-// Add response interceptor for better error handling
-api.interceptors.response.use(
-  response => response,
+api.interceptors.request.use(
+  config => {
+    if (isDev) {
+      console.log('Request:', config.method?.toUpperCase(), config.url)
+    }
+    return config
+  },
   error => {
-    console.error('API Error:', error)
+    if (isDev) {
+      console.error('Request Error:', error)
+    }
+    return Promise.reject(error)
+  }
+)
+
+api.interceptors.response.use(
+  response => {
+    if (isDev) {
+      console.log('Response:', response.status, response.config.url)
+    }
+    return response
+  },
+  error => {
+    if (isDev) {
+      console.error('Response Error:', error)
+    }
     
     if (error.code === 'ERR_NETWORK') {
       error.message = 'Cannot connect to server. Please check if the backend is running.'
