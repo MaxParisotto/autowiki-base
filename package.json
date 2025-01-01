@@ -2,15 +2,15 @@
   "name": "autowiki-base",
   "private": true,
   "version": "0.0.0",
-  "type": "module",
+  "type": "commonjs",
   "scripts": {
     "dev": "vite",
     "build": "vite build",
     "preview": "vite preview",
     "test:db": "NODE_OPTIONS='--import tsx' tsx src/utils/testConnection.ts",
     "test:db:watch": "NODE_OPTIONS='--import tsx' tsx watch src/utils/testConnection.ts",
-    "server": "node server/index.js",
-    "server:dev": "node --watch server/index.js"
+    "server": "ts-node -P tsconfig.server.json server/index.ts",
+    "server:dev": "nodemon --exec 'ts-node -P tsconfig.server.json' server/index.ts"
   },
   "dependencies": {
     "@heroicons/vue": "^2.2.0",
@@ -32,6 +32,8 @@
   "devDependencies": {
     "@formkit/auto-animate": "^0.8.2",
     "@headlessui/vue": "^1.7.23",
+    "@types/cors": "^2.8.17",
+    "@types/express": "^5.0.0",
     "@types/node": "^20.11.25",
     "@vitejs/plugin-vue": "5.2.1",
     "@vueuse/core": "12.2.0",
