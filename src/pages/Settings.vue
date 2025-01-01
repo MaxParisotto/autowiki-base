@@ -233,7 +233,8 @@
 </template>
 
 <script setup lang="ts">
-import { ref } from 'vue'
+import { ref, onMounted } from 'vue'
+import { storageService } from '../services/StorageService'
 
 const settings = ref({
   openai: {
@@ -276,11 +277,22 @@ const settings = ref({
   }
 })
 
+// Load settings on mount
+onMounted(async () => {
+  try {
+    const savedSettings = await storageService.getSettings('default')
+    if (savedSettings) {
+      settings.value = savedSettings
+    }
+  } catch (error) {
+    console.error('Error loading settings:', error)
+  }
+})
+
 const saveSettings = async () => {
   try {
-    // TODO: Implement settings save functionality
-    console.log('Settings saved:', settings.value)
-    // Here you would typically save to local storage or your backend
+    await storageService.saveSettings('default', settings.value)
+    console.log('Settings saved successfully')
   } catch (error) {
     console.error('Error saving settings:', error)
   }
