@@ -274,12 +274,13 @@
 
 <script setup lang="ts">
 import { onMounted, ref } from 'vue'
+import { storeToRefs } from 'pinia' // Add this import
 import { useSettingsStore } from '../stores/settingsStore'
 import { toast } from 'vue-sonner'
-import { mysqlPool, redisClient } from '../config/database'
+import { testDatabaseConnections } from '../utils/api'
 
 const settingsStore = useSettingsStore()
-const { settings, loading, error } = settingsStore
+const { settings, loading, error } = storeToRefs(settingsStore) // Now storeToRefs is defined
 
 onMounted(async () => {
   try {
@@ -317,13 +318,19 @@ const redisStatus = ref({
 async function testConnections() {
   isTesting.value = true
   
-  // Test MySQL
   try {
-    const [result] = await mysqlPool.query('SHOW TABLES')
+    const { mysql, redis } = await testDatabaseConnections()
+    
     mysqlStatus.value = {
-      connected: true,
-      message: 'Connected',
-      details: `Tables found: ${(result as any[]).length}`
+      connected: mysql.connected,
+      message: mysql.connected ? 'Connected' : 'Failed',
+      details: mysql.details
+    }
+    
+    redisStatus.value = {
+      connected: redis.connected,
+      message: redis.connected ? 'Connected' : 'Failed',
+      details: redis.details
     }
   } catch (error: any) {
     mysqlStatus.value = {
@@ -331,32 +338,14 @@ async function testConnections() {
       message: 'Failed',
       details: error.message
     }
-  }
-
-  // Test Redis
-  try {
-    if (!redisClient.isOpen) {
-      await redisClient.connect()
-    }
-    const pong = await redisClient.ping()
-    redisStatus.value = {
-      connected: true,
-      message: 'Connected',
-      details: `Response: ${pong}`
-    }
-  } catch (error: any) {
     redisStatus.value = {
       connected: false,
-      message: 'Failed',
+      message: 'Failed', 
       details: error.message
     }
   } finally {
-    if (redisClient.isOpen) {
-      await redisClient.quit()
-    }
+    isTesting.value = false
   }
-
-  isTesting.value = false
 }
 </script>
 

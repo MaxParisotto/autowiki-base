@@ -1,5 +1,4 @@
 import { createRouter, createWebHistory } from 'vue-router'
-import Home from '../pages/Home.vue'
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -7,12 +6,17 @@ const router = createRouter({
     {
       path: '/',
       name: 'home',
-      component: Home
+      component: () => import('../pages/Home.vue')
     },
     {
       path: '/wiki',
       name: 'wiki',
       component: () => import('../pages/Wiki.vue')
+    },
+    {
+      path: '/weaviate',
+      name: 'weaviate', 
+      component: () => import('../pages/Weaviate.vue')
     },
     {
       path: '/settings',
@@ -22,14 +26,15 @@ const router = createRouter({
   ]
 })
 
-// Navigation guard to log route changes and catch errors
 router.beforeEach((to, from, next) => {
-  console.log(`Navigating from ${from.path} to ${to.path}`)
+  // Handle loading states and pre-route checks if needed
   next()
 })
 
 router.onError((error) => {
-  console.error('Router error:', error)
+  console.error('Navigation error:', error)
+  // Optionally redirect to error page
+  router.push('/error')
 })
 
 export default router

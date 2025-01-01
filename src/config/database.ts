@@ -3,6 +3,8 @@ import { createClient } from 'redis'
 import dotenv from 'dotenv'
 import path from 'path'
 import { initializeDatabase } from './initDatabase'
+import { createPool } from 'mysql2/promise'
+import axios from 'axios'
 
 // Ensure .env is loaded from project root
 dotenv.config({ path: path.resolve(process.cwd(), '.env') })
@@ -47,8 +49,34 @@ export const redisConfig = {
   }
 }
 
-// Create MySQL pool (removed invalid socketTimeout)
-export const mysqlPool = mysql.createPool(mysqlConfig)
+// Only create database connections on the server side
+const isServer = typeof window === 'undefined'
+
+export const mysqlPool = isServer
+  ? createPool({
+      host: process.env.MYSQL_HOST || 'localhost',
+      user: process.env.MYSQL_USER,
+      password: process.env.MYSQL_PASSWORD,
+      database: process.env.MYSQL_DATABASE,
+      waitForConnections: true,
+      connectionLimit: 10,
+      maxIdle: 10,
+      idleTimeout: 60000,
+      queueLimit: 0
+    })
+  : null
+
+export const initDatabaseConnection = async () => {
+  if (!isServer) return
+
+  try {
+    await mysqlPool?.getConnection()
+    console.log('Database connection established')
+  } catch (error) {
+    console.error('Failed to connect to database:', error)
+    throw error
+  }
+}
 
 // Create Redis client with improved error handling
 export const redisClient = createClient(redisConfig)
@@ -70,7 +98,7 @@ export const initializeConnections = async () => {
   try {
     // Test MySQL connection
     console.log('Testing MySQL connection...')
-    await mysqlPool.execute('SELECT 1')
+    await mysqlPool?.execute('SELECT 1')
     console.log('MySQL connection successful')
     
     // Test Redis connection
@@ -91,5 +119,27 @@ export const initializeConnections = async () => {
       console.error(`Error: ${error.message}`)
     }
     throw error
+  }
+}
+
+// Remove direct Redis imports and replace with API client
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:3000/api'
+
+export const apiClient = axios.create({
+  baseURL: API_BASE_URL,
+  headers: {
+    'Content-Type': 'application/json'
+  }
+})
+
+export const DatabaseService = {
+  async testConnection() {
+    try {
+      const response = await apiClient.get('/health')
+      return response.data
+    } catch (error) {
+      console.error('Database connection test failed:', error)
+      throw error
+    }
   }
 }
