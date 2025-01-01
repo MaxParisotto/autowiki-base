@@ -1,6 +1,5 @@
 import { defineStore } from 'pinia'
-import { ref } from 'vue'
-import api from '../utils/api'
+import api from '@/utils/api'
 
 interface Settings {
   openai: {
@@ -41,59 +40,34 @@ interface Settings {
       strategy: string
     }
   }
+  database: {
+    host: string
+    database: string
+  }
+  // Add missing properties
+  apiKey?: string
 }
 
-export const useSettingsStore = defineStore('settings', () => {
-  const settings = ref({
-    openai: { apiKey: '', model: '' },
-    ollama: { url: '' },
-    customGpt: { url: '', apiKey: '' },
-    redis: { url: '', password: '' },
-    nextcloud: { url: '', username: '', password: '' },
-    rag: {
-      embeddingModel: 'text-embedding-3-small',
-      vectorStore: { type: 'weaviate', url: '', apiKey: '' },
-      retrieval: { topK: 5, similarityThreshold: 0.7, mmrLambda: 0.5 },
-      chunking: { chunkSize: 500, chunkOverlap: 50, strategy: 'fixed' }
+export const useSettingsStore = defineStore('settings', {
+  state: () => ({
+    settings: null as Settings | null,
+    loading: false,
+    error: null as string | null
+  }),
+  
+  actions: {
+    async loadSettings() {
+      this.loading = true
+      this.error = null
+      try {
+        const response = await api.get('/api/settings')
+        this.settings = response.data
+      } catch (error) {
+        this.error = 'Failed to load settings'
+        console.error('Error loading settings:', error)
+      } finally {
+        this.loading = false
+      }
     }
-  })
-  const loading = ref(false)
-  const error = ref(null)
-
-  async function loadSettings() {
-    loading.value = true
-    try {
-      const response = await api.get('/settings')
-      settings.value = response.data
-      error.value = null
-    } catch (err) {
-      error.value = 'Failed to load settings'
-      throw err
-    } finally {
-      loading.value = false
-    }
-  }
-
-  async function saveSettings(newSettings: Settings) {
-    loading.value = true
-    try {
-      await api.post('/settings', newSettings)
-      settings.value = newSettings
-      error.value = null
-      return true
-    } catch (err) {
-      error.value = 'Failed to save settings'
-      return false
-    } finally {
-      loading.value = false
-    }
-  }
-
-  return {
-    settings,
-    loading,
-    error,
-    loadSettings,
-    saveSettings
   }
 })

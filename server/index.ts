@@ -53,7 +53,6 @@ app.get('/api/health/db', async (_req: Request, res: Response) => {
 // Settings endpoints
 app.get('/api/settings', async (_req: Request, res: Response) => {
   try {
-    // Placeholder response - implement actual settings logic
     res.json({
       database: {
         host: config.mysql.host,
@@ -63,7 +62,8 @@ app.get('/api/settings', async (_req: Request, res: Response) => {
         host: config.redis.host,
         port: config.redis.port,
         db: config.redis.db
-      }
+      },
+      apiKey: '' // Add default value
     })
   } catch (error) {
     console.error('Failed to fetch settings:', error)
